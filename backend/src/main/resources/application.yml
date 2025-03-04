@@ -9,7 +9,15 @@ spring:
   profiles:
     active: dev
 
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/flicktionary
+    username: root
+    password: lldj123414
+
   jpa:
+    database: mysql
+    database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: false
     hibernate:
       ddl-auto: update
