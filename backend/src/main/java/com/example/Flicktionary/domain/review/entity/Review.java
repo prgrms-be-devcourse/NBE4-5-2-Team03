@@ -2,6 +2,7 @@ package com.example.Flicktionary.domain.review.entity;
 
 import com.example.Flicktionary.domain.movie.entity.Movie;
 import com.example.Flicktionary.domain.series.domain.Series;
+import com.example.Flicktionary.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.*;
 

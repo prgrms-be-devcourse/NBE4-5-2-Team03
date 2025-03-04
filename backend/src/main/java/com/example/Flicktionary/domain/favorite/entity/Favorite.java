@@ -1,6 +1,6 @@
 package com.example.Flicktionary.domain.favorite.entity;
 
-import com.example.Flicktionary.user.entity.User;
+import com.example.Flicktionary.domain.user.entity.User;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
