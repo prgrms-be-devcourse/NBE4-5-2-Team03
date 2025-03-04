@@ -36,6 +36,10 @@ public class Movie {
 
     private String posterPath;
 
+    private String production_country;
+
+    private String production_company;
+
     private Integer runtime;
 
     private float averageRating;
