@@ -1,4 +1,4 @@
-package com.example.Flicktionary.init;
+package com.example.Flicktionary.global.init;
 
 import com.example.Flicktionary.domain.movie.repository.MovieRepository;
 import com.example.Flicktionary.domain.movie.service.MovieService;
