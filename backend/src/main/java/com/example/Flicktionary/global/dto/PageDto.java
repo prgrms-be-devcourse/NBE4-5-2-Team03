@@ -26,12 +26,15 @@ public class PageDto<T> {
     @NonNull
     private int pageSize;
 
+    private String sortBy;
+
     public PageDto(Page<T> page) {
         this.items = page.getContent();
         this.totalItems = (int) page.getTotalElements();
         this.totalPages = page.getTotalPages();
         this.curPageNo = page.getNumber() + 1;
         this.pageSize = page.getSize();
+        this.sortBy = page.getSort().toString();
     }
 
 }

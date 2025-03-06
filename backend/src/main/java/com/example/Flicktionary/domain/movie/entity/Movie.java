@@ -6,8 +6,11 @@ import com.example.Flicktionary.domain.genre.entity.Genre;
 import com.example.Flicktionary.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.hibernate.annotations.FetchMode;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -32,6 +35,8 @@ public class Movie {
 
     private LocalDate releaseDate;
 
+    private LocalDate fetchDate;
+
     private String status;
 
     private String posterPath;
@@ -44,29 +49,30 @@ public class Movie {
 
     private float averageRating;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "movie_genre",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id")
     )
-    @Singular
-    private List<Genre> genres;
+    @Builder.Default
+    private List<Genre> genres = new ArrayList<>();
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
             name = "movie_actor",
             joinColumns = @JoinColumn(name = "movie_id"),
             inverseJoinColumns = @JoinColumn(name = "actor_id")
     )
-    @Singular
-    private List<Actor> actors;
+    @Fetch(FetchMode.SUBSELECT)
+    @Builder.Default
+    private List<Actor> actors = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "director_id")
     private Director director;
 
     @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Singular
-    private List<Review> reviews;
+    @Builder.Default
+    private List<Review> reviews = new ArrayList<>();
 }

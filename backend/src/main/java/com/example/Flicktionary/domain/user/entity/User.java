@@ -64,7 +64,8 @@ public class User {
 
     /**
      * 유저가 즐겨찾기에 등록한 작품.
+     * 사용자가 삭제되면 Favorite도 같이 삭제됨.
      */
-    @OneToMany(mappedBy = "user")
+    @OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Favorite> favorites = new ArrayList<>();
 }
