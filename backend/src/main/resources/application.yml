@@ -11,7 +11,7 @@ spring:
 
   profiles:
     active: dev
-#    include: test
+  #    include: test
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
@@ -25,7 +25,7 @@ spring:
     open-in-view: false
     hibernate:
       ddl-auto: update
-#      ddl-auto: create
+    #      ddl-auto: create
     show-sql: false
     properties:
       hibernate:
@@ -43,8 +43,12 @@ logging:
 
 custom:
   jwt:
-    secret-key: ${JWT_SECRET_KEY}
+#    secret-key: ${JWT_SECRET_KEY}
+    secret-key: your_secret_key
     # 접근 토큰 유효기간(초)
     access-expire-seconds: "#{300}"
     # 리프레시 토큰 유효기간(일)
     refresh-expire-days: "#{7}"
+
+tmdb:
+  base-image-url: your_tmdb_base_image_url

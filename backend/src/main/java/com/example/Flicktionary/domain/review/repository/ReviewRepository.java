@@ -9,11 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface ReviewRepository extends JpaRepository<Review, Long> {
 
     // 특정 영화에 대한 리뷰를 페이징 처리해서 가져옴
-    @EntityGraph(attributePaths = {"user"}) // 최적화를 위해 EntityGraph 사용
+    @EntityGraph(attributePaths = {"userAccount"}) // 최적화를 위해 EntityGraph 사용
     Page<Review> findByMovie_Id(Long movieId, Pageable pageable);
 
     // 특정 드라마에 대한 리뷰를 페이징 처리해서 가져옴
-    @EntityGraph(attributePaths = {"user"}) // 최적화를 위해 EntityGraph 사용
+    @EntityGraph(attributePaths = {"userAccount"}) // 최적화를 위해 EntityGraph 사용
     Page<Review> findBySeries_Id(Long seriesId, Pageable pageable);
 }
 
