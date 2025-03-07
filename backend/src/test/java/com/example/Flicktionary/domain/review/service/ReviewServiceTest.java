@@ -44,6 +44,8 @@ public class ReviewServiceTest {
     @Autowired
     private SeriesRepository seriesRepository;
 
+    
+    // 변수 설정
     private UserAccount testUser;
     private Movie testMovie;
     private Series testSeries;
