@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
 @Getter
 public class DirectorDto {
     @NonNull
-    private final long id;
+    private final Long id;
     @NonNull
     private final String name;
 

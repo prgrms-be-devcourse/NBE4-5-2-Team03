@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.time.LocalDate;
 
-public record MovieDto(long id, String title, String overview,
+public record MovieDto(Long id, String title, String overview,
                        @JsonProperty("release_date") String releaseDate,
                        @JsonProperty("poster_path") String posterPath) {
     public Movie toEntity(String baseImageUrl) {

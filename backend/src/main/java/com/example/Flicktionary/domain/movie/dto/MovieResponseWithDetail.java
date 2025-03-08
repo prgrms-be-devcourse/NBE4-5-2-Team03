@@ -15,16 +15,16 @@ import java.util.List;
 @Getter
 public class MovieResponseWithDetail {
     @NonNull
-    private final long id;
+    private final Long id;
     @NonNull
-    private final long tmdbId;
+    private final Long tmdbId;
     @NonNull
     private final String title;
     private final String overview;
     private final LocalDate releaseDate;
     private final String posterPath;
     private final String status;
-    private final int runtime;
+    private final Integer runtime;
     private final String productionCountry;
     private final String productionCompany;
     @NonNull

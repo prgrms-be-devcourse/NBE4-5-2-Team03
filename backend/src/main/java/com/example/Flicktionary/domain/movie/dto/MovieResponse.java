@@ -9,9 +9,9 @@ import org.springframework.lang.NonNull;
 @Getter
 public class MovieResponse {
     @NonNull
-    private final long id;
+    private final Long id;
     @NonNull
-    private final long tmdbId;
+    private final Long tmdbId;
     @NonNull
     private final String title;
     private final String posterPath;

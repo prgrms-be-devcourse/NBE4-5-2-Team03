@@ -9,7 +9,7 @@ import org.springframework.lang.NonNull;
 @AllArgsConstructor
 public class GenreDto {
     @NonNull
-    private final long id;
+    private final Long id;
 
     @NonNull
     private final String name;
