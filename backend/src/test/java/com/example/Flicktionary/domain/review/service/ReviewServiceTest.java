@@ -76,7 +76,7 @@ public class ReviewServiceTest {
 
         // 테스트용 Series 엔티티 생성
         testSeries = seriesRepository.save(Series.builder()
-                .id(10000000000L)
+                .tmdbId(10000000000L)
                 .title("테스트용 드라마 제목")
                 .plot("테스트용 드라마 줄거리")
                 .episode(12)
