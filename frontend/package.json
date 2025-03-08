@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "next": "15.2.1",
+    "openapi-fetch": "^0.13.4",
     "prettier": "^3.5.3",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
@@ -22,6 +23,7 @@
     "@types/react-dom": "^19",
     "eslint": "^9",
     "eslint-config-next": "15.2.1",
+    "openapi-typescript": "^7.6.1",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

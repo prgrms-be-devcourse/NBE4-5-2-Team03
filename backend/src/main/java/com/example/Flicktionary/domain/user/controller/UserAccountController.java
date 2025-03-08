@@ -17,7 +17,7 @@ import org.springframework.web.bind.annotation.*;
  * 회원 도메인에 해당하는 API 엔드포인트
  */
 @RequestMapping("/api/users")
-@Controller
+@RestController
 @RequiredArgsConstructor
 public class UserAccountController {
 

@@ -16,6 +16,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final CustomAuthenticationFilter customAuthenticationFilter;
+    private final CorsConfig corsConfig;
 
     @Bean
     SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
@@ -25,6 +26,8 @@ public class SecurityConfig {
                         authorizeHttpRequests
                                 .anyRequest()
                                 .permitAll())
+                // CORS 설정 적용
+                .cors(cors -> cors.configurationSource(corsConfig))
                 // CSRF 보호 비활성
                 .csrf(AbstractHttpConfigurer::disable)
                 // XSS 보호 비활성
