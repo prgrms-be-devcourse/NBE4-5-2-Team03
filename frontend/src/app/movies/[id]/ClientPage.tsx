@@ -33,23 +33,23 @@ export default function ClientPage({
               </li>
               <li>
                 <span className="font-semibold">개봉일:</span>{" "}
-                {data.releaseDate || "미공개"}
+                {data.releaseDate || "미정"}
               </li>
               <li>
                 <span className="font-semibold">영화 상태:</span>{" "}
-                {data.status || "미공개"}
+                {data.status || "미정"}
               </li>
               <li>
                 <span className="font-semibold">상영 시간:</span>{" "}
-                {data.runtime ? `${data.runtime} 분` : "미공개"}
+                {data.runtime ? `${data.runtime} 분` : "미정"}
               </li>
               <li>
                 <span className="font-semibold">제작사:</span>{" "}
-                {data.productionCompany || "미공개"}
+                {data.productionCompany?.trim() || "미정"}
               </li>
               <li>
                 <span className="font-semibold">제작 국가:</span>{" "}
-                {data.productionCountry || "미공개"}
+                {data.productionCountry?.trim() || "미정"}
               </li>
             </ul>
           </div>
@@ -57,7 +57,7 @@ export default function ClientPage({
           {/* 영화 개요 */}
           <h2 className="text-2xl font-bold mb-4">줄거리</h2>
           <p className="text-gray-700">
-            {data.overview || "줄거리 정보가 없습니다."}
+            {data.overview?.trim() || "줄거리 정보가 없습니다."}
           </p>
         </div>
       </div>
@@ -68,7 +68,7 @@ export default function ClientPage({
         <div className="flex">
           <Card className="w-40 flex flex-col items-center p-4 shadow-md">
             <img
-              src={"test.png"} // 프로필 이미지 (임시)
+              src={"/no-image.png"} // 프로필 이미지 (임시)
               alt={data.director?.name}
               className="w-20 h-20 object-cover rounded-full border mb-3"
             />
@@ -89,7 +89,7 @@ export default function ClientPage({
               className="flex flex-col items-center p-4 shadow-md w-40"
             >
               <img
-                src={"test.png"} // 프로필 이미지 (임시)
+                src={"/no-image.png"} // 프로필 이미지 (임시)
                 alt={actor.name}
                 className="w-20 h-20 object-cover rounded-full border mb-3"
               />

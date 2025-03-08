@@ -6,6 +6,7 @@ import com.example.Flicktionary.domain.genre.dto.GenreDto;
 import com.example.Flicktionary.domain.movie.entity.Movie;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.lang.NonNull;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -13,8 +14,11 @@ import java.util.List;
 @AllArgsConstructor
 @Getter
 public class MovieResponseWithDetail {
+    @NonNull
     private final long id;
+    @NonNull
     private final long tmdbId;
+    @NonNull
     private final String title;
     private final String overview;
     private final LocalDate releaseDate;
@@ -23,7 +27,10 @@ public class MovieResponseWithDetail {
     private final int runtime;
     private final String productionCountry;
     private final String productionCompany;
+    @NonNull
     private final float averageRating;
+    @NonNull
+    private final int ratingCount;
     private final List<GenreDto> genres;
     private final List<ActorDto> actors;
     private final DirectorDto director;
@@ -40,6 +47,7 @@ public class MovieResponseWithDetail {
                 movie.getProductionCountry(),
                 movie.getProductionCompany(),
                 movie.getAverageRating(),
+                movie.getRatingCount(),
                 movie.getGenres().stream().map(g -> new GenreDto(g.getId(), g.getName())).toList(),
                 movie.getActors().stream().map(ActorDto::new).toList(),
                 new DirectorDto(movie.getDirector())

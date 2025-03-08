@@ -30,7 +30,7 @@ export default function ClientPage({
 }) {
   const router = useRouter();
   const movies = data.items;
-  const totalPages = data.totalPages || 1;
+  const totalPages = data.totalPages;
 
   // 페이지 그룹 계산 (5개씩 이동)
   const groupSize = 5;
@@ -152,7 +152,7 @@ export default function ClientPage({
                 </h2>
                 <div className="flex items-center gap-2 mt-2">
                   <span className="text-yellow-500 font-bold text-lg">
-                    ⭐ {movie.averageRating?.toFixed(2)}
+                    ⭐ {movie.averageRating.toFixed(2)}
                   </span>
                   <span className="text-sm text-gray-500">
                     ({movie.ratingCount} 리뷰)
