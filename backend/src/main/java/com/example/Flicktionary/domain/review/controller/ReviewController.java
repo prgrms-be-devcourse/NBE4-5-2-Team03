@@ -7,6 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -63,16 +64,16 @@ public class ReviewController {
         } catch (NoSuchElementException e) {
             
             // 영화를 찾을 수 없을 경우 404 상태 반환
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "영화를 찾을 수 없습니다.");
         } catch (IllegalArgumentException e) {
 
             // 잘못된 파라미터가 전달된 경우 400 상태 반환
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 파라미터입니다.");
         } catch (Exception e) {
 
             // 그 이외의 예외 발생 시 500 상태 반환 및 로그 기록
             System.out.println("영화 리뷰 조회 중 오류가 발생했습니다: " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "영화 리뷰 조회 중 오류가 발생했습니다.");
         }
     }
 
@@ -91,17 +92,16 @@ public class ReviewController {
         } catch (NoSuchElementException e) {
 
             // 드라마를 찾을 수 없을 경우 404 상태 반환
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "드라마를 찾을 수 없습니다.");
         } catch (IllegalArgumentException e) {
 
             // 잘못된 파라미터가 전달된 경우 400 상태 반환
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 파라미터입니다.");
         } catch (Exception e) {
 
             // 그 이외의 예외 발생 시 500 상태 반환 및 로그 기록
             System.out.println("드라마 리뷰 조회 중 오류가 발생했습니다: " + e.getMessage());
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "드라마 리뷰 조회 중 오류가 발생했습니다.");
         }
-        
     }
 }
