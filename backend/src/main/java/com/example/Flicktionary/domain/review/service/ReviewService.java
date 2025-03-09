@@ -17,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -41,14 +40,12 @@ public class ReviewService {
 
         // 영화를 찾아 저장. 없을 경우 null
         Movie movie = Optional.ofNullable(reviewDto.getMovieId())
-                .map(movieRepository::findById)
-                .flatMap(m -> m)
+                .flatMap(movieRepository::findById)
                 .orElse(null);
 
         // 드라마를 찾아 저장. 없을 경우 null
         Series series = Optional.ofNullable(reviewDto.getSeriesId())
-                .map(seriesRepository::findById)
-                .flatMap(s -> s)
+                .flatMap(seriesRepository::findById)
                 .orElse(null);
 
         // 리뷰 내용이 null이거나 비어있을 경우
@@ -73,13 +70,8 @@ public class ReviewService {
     // 모든 리뷰 조회
     public List<ReviewDto> findAllReviews() {
 
-        // findAll()이 Iterable을 반환할 수 없어, List로 변환시켜 변수에 저장
-        List<Review> reviews = new ArrayList<>();
-
-        reviewRepository.findAll().forEach(reviews::add);
-
-        // 스트림을 사용해 Entity를 Dto로 변환
-        return reviews.stream()
+        // 모든 리뷰를 찾아 리턴
+        return reviewRepository.findAll().stream()
                 .map(ReviewDto::fromEntity)
                 .collect(Collectors.toList());
     }
@@ -91,13 +83,17 @@ public class ReviewService {
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 리뷰를 찾을 수 없습니다."));
 
-        // 리뷰의 평점이나 내용 수정
-        review.setRating(reviewDto.getRating());
-        review.setContent(reviewDto.getContent());
+        // 리뷰의 평점 수정
+        if (reviewDto.getRating() != 0) {
+            review.setRating(reviewDto.getRating());
+        }
 
-        // DB에 영속화 및 리턴
-        Review savedReview = reviewRepository.save(review);
-        return ReviewDto.fromEntity(savedReview);
+        // 리뷰의 내용 수정
+        if (reviewDto.getContent() != null && !reviewDto.getContent().isBlank()) {
+            review.setContent(reviewDto.getContent());
+        }
+
+        return ReviewDto.fromEntity(review);
     }
 
     // 리뷰 삭제
