@@ -113,7 +113,7 @@ public class SeriesControllerTest {
                 .releaseEndDate(LocalDate.of(2021, 1, 1))
                 .status("Completed")
                 .genres(Collections.emptyList())
-                .actors(Collections.emptyList())
+                .casts(Collections.emptyList())
                 .director(null)
                 .build();
 
