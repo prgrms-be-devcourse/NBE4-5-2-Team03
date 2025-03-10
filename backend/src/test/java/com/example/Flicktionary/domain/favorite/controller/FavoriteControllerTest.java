@@ -17,8 +17,7 @@ import java.nio.charset.StandardCharsets;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 @SpringBootTest
 //@ActiveProfiles("test")
@@ -34,79 +33,15 @@ public class FavoriteControllerTest {
 
     private FavoriteDto favoriteDto;
 
-//    @Autowired
-//    private UserAccountRepository userAccountRepository;
-//    @Autowired
-//    private MovieRepository movieRepository;
-//    @Autowired
-//    private SeriesRepository seriesRepository;
-//
-//    private UserAccount testUser;
-//    private Movie testMovie;
-//    private Series testSeries;
-//    private ReviewDto reviewDto;
-//
-//    @BeforeEach
-//    void beforeEach() {
-//
-//        // 테스트용 User 엔티티 생성 및 저장
-//        testUser = userAccountRepository.save(UserAccount.builder()
-//                .username("테스트용 유저")
-//                .password("test1234")
-//                .email("test@email.com")
-//                .nickname("테스트 유저")
-//                .role(UserAccountType.USER)
-//                .build());
-//
-//        // 테스트용 Movie 엔티티 생성
-//        testMovie = movieRepository.save(Movie.builder()
-//                .tmdbId(10000000000L)
-//                .title("테스트용 영화 제목")
-//                .overview("테스트용 영화 줄거리")
-//                .releaseDate(LocalDate.of(2024, 1, 1))
-//                .posterPath("테스트용 이미지")
-//                .productionCountry("KR")
-//                .productionCompany("테스트용 제작사")
-//                .status("상영 중")
-//                .averageRating(4)
-//                .ratingCount(15)
-//                .build()
-//        );
-//
-//        // 테스트용 Series 엔티티 생성
-//        testSeries = seriesRepository.save(Series.builder()
-//                .tmdbId(1L)
-//                .title("테스트용 드라마 제목")
-//                .plot("테스트용 드라마 줄거리")
-//                .episode(12)
-//                .status("상영중")
-//                .imageUrl("테스트용 이미지")
-//                .averageRating(4.5)
-//                .ratingCount(10)
-//                .releaseStartDate(LocalDate.of(2024, 1, 1))
-//                .releaseEndDate(LocalDate.of(2200, 1, 2))
-//                .nation("KR")
-//                .company("테스트용 제작사")
-//                .build()
-//        );
-//
-//        reviewDto = ReviewDto.builder()
-//                .userAccountId(testUser.getId())
-//                .nickname(testUser.getNickname())
-//                .movieId(testMovie.getId())
-//                .rating(5)
-//                .content("테스트용 리뷰 내용")
-//                .build();
-//    }
-
     @Test
-    @DisplayName("Create Favorite")
+    @DisplayName("즐겨찾기 추가 - 성공")
     void createFavorite() throws Exception {
-
+        // Given
         Long userId = 1L;
         ContentType contentType = ContentType.MOVIE;
         Long contentId = 599L;
 
+        // When & Then
         ResultActions resultActions = mvc
                 .perform(
                         post("/api/favorite")
@@ -123,17 +58,22 @@ public class FavoriteControllerTest {
                                         new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                                 )
                 )
-                .andDo(print())
-                .andExpect(status().isCreated());
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isCreated())
+                .andExpect(handler().handlerType(FavoriteController.class))
+                .andExpect(handler().methodName("createFavorite"));
 
     }
 
     @Test
-    @DisplayName("Read Favorite")
+    @DisplayName("즐겨찾기 조회 - 성공")
     void getFavorite() throws Exception {
-
+        // Given
         Long userId = 1L;
 
+        // When & Then
         ResultActions resultActions = mvc
                 .perform(
                         get("/api/favorite/%d".formatted(userId))
@@ -146,11 +86,12 @@ public class FavoriteControllerTest {
     }
 
     @Test
-    @DisplayName("Delete Favorite")
+    @DisplayName("즐겨찾기 삭제 - 성공")
     void deleteFavorite() throws Exception {
-
+        // Given
         Long id = 1L;
 
+        // When & Then
         ResultActions resultActions = mvc
                 .perform(
                         delete("/api/favorite/%d".formatted(id))
@@ -158,18 +99,22 @@ public class FavoriteControllerTest {
                                         new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                                 )
                 )
-                .andDo(print())
-                .andExpect(status().isNoContent());
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isNoContent())
+                .andExpect(handler().handlerType(FavoriteController.class))
+                .andExpect(handler().methodName("deleteFavorite"));
     }
 
     @Test
-    @DisplayName("중복 저장 테스트")
+    @DisplayName("즐겨찾기에 중복 추가 시 예외 발생")
     void checkDuplicate() throws Exception {
+        // Given
         Long userId = 1L;
         ContentType contentType = ContentType.MOVIE;
-        Long contentId = 200L;
+        Long contentId = 599L;
 
-        // 첫 번째 저장 (201 Created)
         String content = """
                 {
                     "userId": "%d",
@@ -180,81 +125,88 @@ public class FavoriteControllerTest {
                 .formatted(userId, contentType, contentId)
                 .stripIndent();
 
+        // When & Then
 
-        mvc.perform(
-                        post("/api/favorite")
-                                .content(content)
-                                .contentType(
-                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                                )
-                )
-                .andDo(print())
-                .andExpect(status().isCreated());
+        // 첫 번째 저장 (201 Created)
+        ResultActions resultActions1 = mvc.perform(post("/api/favorite")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+
+        resultActions1
+                .andExpect(status().isCreated())
+                .andExpect(handler().handlerType(FavoriteController.class))
+                .andExpect(handler().methodName("createFavorite"));
+
 
         // 중복 저장 시도 (IllegalArgumentException 발생, 400 Bad Request)
-        mvc.perform(
-                        post("/api/favorite")
-                                .content(content)
-                                .contentType(
-                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                                )
-                )
-                .andDo(print())
-                .andExpect(status().isBadRequest());
+        ResultActions resultActions2 = mvc.perform(post("/api/favorite")
+                        .content(content)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+
+        resultActions2
+                .andExpect(status().isBadRequest())
+                .andExpect(handler().handlerType(FavoriteController.class))
+                .andExpect(handler().methodName("createFavorite"));
     }
 
     @Test
-    @DisplayName("존재하지 않는 ContentID 저장 테스트")
+    @DisplayName("존재하지 않는 ContentID 추가 시 예외 발생")
     void checkContentId() throws Exception {
+        // Given
         Long userId = 1L;
         ContentType contentType = ContentType.MOVIE;
-        Long contentId = 9999L;
+        Long contentId = 999999999L;
 
+        // When & Then
         // 존재하지 않는 ContentID 저장 시도 (IllegalArgumentException 발생, 400 Bad Request)
-        mvc.perform(
-                        post("/api/favorite")
-                                .content("""
-                                        {
-                                            "userId": "%d",
-                                            "contentType": "%s",
-                                            "contentId": "%d"
-                                        }
-                                        """
-                                        .formatted(userId, contentType, contentId)
-                                        .stripIndent())
-                                .contentType(
-                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                                )
-                )
-                .andDo(print())
-                .andExpect(status().isBadRequest());
+        ResultActions resultActions = mvc.perform(post("/api/favorite")
+                        .content("""
+                                {
+                                    "userId": "%d",
+                                    "contentType": "%s",
+                                    "contentId": "%d"
+                                }
+                                """
+                                .formatted(userId, contentType, contentId)
+                                .stripIndent())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(handler().handlerType(FavoriteController.class))
+                .andExpect(handler().methodName("createFavorite"));
     }
 
     @Test
-    @DisplayName("존재하지 않는 User 저장 테스트")
+    @DisplayName("존재하지 않는 UserId로 즐겨찾기 추가 시 예외 발생")
     void checkUserId() throws Exception {
-        Long userId = 9999L;
+        // Given
+        Long userId = 999999999L;
         ContentType contentType = ContentType.MOVIE;
         Long contentId = 1L;
 
         // 존재하지 않는 User 저장 시도 (IllegalArgumentException 발생, 400 Bad Request)
-        mvc.perform(
-                        post("/api/favorite")
-                                .content("""
-                                        {
-                                            "userId": "%d",
-                                            "contentType": "%s",
-                                            "contentId": "%d"
-                                        }
-                                        """
-                                        .formatted(userId, contentType, contentId)
-                                        .stripIndent())
-                                .contentType(
-                                        new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
-                                )
-                )
-                .andDo(print())
-                .andExpect(status().isBadRequest());
+        // When & Then
+        ResultActions resultActions = mvc.perform(post("/api/favorite")
+                        .content("""
+                                {
+                                    "userId": "%d",
+                                    "contentType": "%s",
+                                    "contentId": "%d"
+                                }
+                                """
+                                .formatted(userId, contentType, contentId)
+                                .stripIndent())
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
+
+        resultActions
+                .andExpect(status().isBadRequest())
+                .andExpect(handler().handlerType(FavoriteController.class))
+                .andExpect(handler().methodName("createFavorite"));
     }
 
     @Test
