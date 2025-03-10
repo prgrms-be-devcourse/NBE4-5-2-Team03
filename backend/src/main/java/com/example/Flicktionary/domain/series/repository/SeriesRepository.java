@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface SeriesRepository extends JpaRepository<Series, Long> {
 
-    @EntityGraph(attributePaths = {"actors", "director"})
+    @EntityGraph(attributePaths = {"director", "casts", "casts.actor"})
     Optional<Series> findById(Long id);
 
     Optional<Series> findByTmdbId(Long tmdbId);

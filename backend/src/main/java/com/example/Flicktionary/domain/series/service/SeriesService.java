@@ -8,6 +8,7 @@ import com.example.Flicktionary.domain.genre.entity.Genre;
 import com.example.Flicktionary.domain.genre.repository.GenreRepository;
 import com.example.Flicktionary.domain.series.dto.SeriesDetailResponse;
 import com.example.Flicktionary.domain.series.entity.Series;
+import com.example.Flicktionary.domain.series.entity.SeriesCast;
 import com.example.Flicktionary.domain.series.repository.SeriesRepository;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbPopularSeriesResponse;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbSeriesDetailResponse;
@@ -125,26 +126,13 @@ public class SeriesService {
                     )
                     .collect(Collectors.toList());
 
-            //Actor 엔티티 생성
-            List<Actor> actors = response.getBody().getTmdbCredits().cast().stream()
-                    .limit(5)
-                    .map(actorDto ->
-                            actorRepository.findById(actorDto.id())
-                                    .orElseGet(() -> {
-                                        Actor newActor = new Actor(actorDto.id(), actorDto.name(), actorDto.profilePath());
-                                        actorRepository.save(newActor);
-                                        return newActor;
-                                    })
-                    )
-                    .collect(Collectors.toList());
-
             //Director 엔티티 생성
             Director director = response.getBody().getTmdbCredits().crew().stream()
                     .findFirst()
                     .map(directorDto ->
                             directorRepository.findById(directorDto.id())
                                     .orElseGet(() -> {
-                                        Director newDirector = new Director(directorDto.id(), directorDto.name(), directorDto.profilePath());
+                                        Director newDirector = new Director(directorDto.id(), directorDto.name(), baseImageUrl+directorDto.profilePath());
                                         directorRepository.save(newDirector);
                                         return newDirector;
                                     })
@@ -153,7 +141,29 @@ public class SeriesService {
 
             seriesRepository.findByTmdbId(response.getBody().getTmdbId()).ifPresentOrElse(
                     series -> updateSeries(series, response),
-                    () -> seriesRepository.save(TmdbSeriesDetailResponse.toEntity(response, genres, actors, director, baseImageUrl))
+                    () -> {
+                        Series series = TmdbSeriesDetailResponse.toEntity(response, genres, director, baseImageUrl);
+                        // SeriesCast 엔티티 생성 및 Actor 생성
+                        List<SeriesCast> casts = response.getBody().getTmdbCredits().cast().stream()
+                                .limit(5)
+                                .map(actorDto -> {
+                                    // Actor 엔티티 바로 생성
+                                    Actor actor = new Actor(actorDto.id(), actorDto.name(), baseImageUrl+actorDto.profilePath());
+                                    actorRepository.save(actor);  // 바로 DB에 저장
+
+                                    // SeriesCast 엔티티 생성
+                                    SeriesCast seriesCast = new SeriesCast();
+
+                                    //연결
+                                    seriesCast.setActor(actor);
+                                    seriesCast.setCharacterName(actorDto.character());
+                                    seriesCast.setSeries(series);
+                                    series.getCasts().add(seriesCast);
+                                    return seriesCast;
+                                })
+                                .collect(Collectors.toList());
+                        seriesRepository.save(series);
+                    }
             );
 
 

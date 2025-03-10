@@ -1,6 +1,5 @@
 package com.example.Flicktionary.domain.series.dto;
 
-import com.example.Flicktionary.domain.actor.dto.ActorDto;
 import com.example.Flicktionary.domain.director.dto.DirectorDto;
 import com.example.Flicktionary.domain.genre.dto.GenreDto;
 import com.example.Flicktionary.domain.series.entity.Series;
@@ -46,7 +45,7 @@ public class SeriesDetailResponse {
 
     private List<GenreDto> genres;
 
-    private List <ActorDto> actors;
+    private List <SeriesCastDto> casts;
 
     private DirectorDto director;
 
@@ -71,10 +70,10 @@ public class SeriesDetailResponse {
                 .map(GenreDto::new)
                 .toList();
 
-        this.actors = Optional.ofNullable(series.getActors())
+        this.casts = Optional.ofNullable(series.getCasts())
                 .orElseGet(Collections::emptyList)
                 .stream()
-                .map(ActorDto::new)
+                .map(SeriesCastDto::new)
                 .toList();
 
         this.director = series.getDirector() != null ? new DirectorDto(series.getDirector()) : null;

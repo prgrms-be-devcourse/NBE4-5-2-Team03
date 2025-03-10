@@ -1,6 +1,5 @@
 package com.example.Flicktionary.domain.tmdb.dto;
 
-import com.example.Flicktionary.domain.actor.entity.Actor;
 import com.example.Flicktionary.domain.director.entity.Director;
 import com.example.Flicktionary.domain.genre.entity.Genre;
 import com.example.Flicktionary.domain.series.entity.Series;
@@ -60,7 +59,6 @@ public class TmdbSeriesDetailResponse {
     public static Series toEntity(
             ResponseEntity<TmdbSeriesDetailResponse> response,
             List<Genre> genres,
-            List<Actor> actors,
             Director director,
             String baseImageUrl) {
         TmdbSeriesDetailResponse body = response.getBody();
@@ -77,7 +75,6 @@ public class TmdbSeriesDetailResponse {
                 .nation(getFirstOrDefault(body.getOriginCountry(), "Unknown"))
                 .company(getFirstCompanyOrDefault(body.getProductionCompanies(), "Unknown"))
                 .genres(genres)
-                .actors(actors)
                 .director(director)
                 .build();
     }
