@@ -6,6 +6,9 @@ spring:
     ansi:
       enabled: always
 
+  config:
+    import: "optional:file:.env[.properties]"
+
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect

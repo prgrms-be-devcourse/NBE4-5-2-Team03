@@ -52,7 +52,7 @@ public class MovieService {
             for (MovieDto movieDto : movieDtos) {
                 movieRepository.findByTmdbId(movieDto.id()).ifPresentOrElse(
                         movie -> updateMovie(movie, movieDto),
-                        () -> movieRepository.save(movieDto.toEntity(baseImageUrl))
+                        () -> movieRepository.save(movieDto.toEntity(baseImageUrl + "/w342"))
                 );
             }
         }
@@ -67,7 +67,7 @@ public class MovieService {
         for (MovieDto movieDto : movieDtos) {
             movieRepository.findByTmdbId(movieDto.id()).ifPresentOrElse(
                     movie -> updateMovie(movie, movieDto),
-                    () -> movieRepository.save(movieDto.toEntity(baseImageUrl))
+                    () -> movieRepository.save(movieDto.toEntity(baseImageUrl + "/w342"))
             );
         }
     }
@@ -135,7 +135,7 @@ public class MovieService {
         movie.setOverview(response.overview());
         movie.setReleaseDate(response.releaseDate().isEmpty() ? null : LocalDate.parse(response.releaseDate()));
         movie.setStatus(response.status());
-        movie.setPosterPath(baseImageUrl + response.posterPath());
+        movie.setPosterPath(baseImageUrl + "/w342" + response.posterPath());
         movie.setRuntime(response.runtime());
         movie.setProductionCountry(response.productionCountries().isEmpty() ? "Unknown" : response.productionCountries().getFirst().name());
         movie.setProductionCompany(response.productionCompanies().isEmpty() ? "Unknown" : response.productionCompanies().getFirst().name());
@@ -155,7 +155,7 @@ public class MovieService {
                 .limit(5) // 상위 5명만 저장
                 .map(a -> {
                     Actor actor = actorRepository.findById(a.id())
-                            .orElseGet(() -> actorRepository.save(new Actor(a.id(), a.name(), baseImageUrl + a.profilePath())));
+                            .orElseGet(() -> actorRepository.save(new Actor(a.id(), a.name(), baseImageUrl + "/w185" + a.profilePath())));
                     return MovieCast.builder().movie(movie).actor(actor).characterName(a.character()).build();
                 })
                 .toList();
@@ -167,7 +167,7 @@ public class MovieService {
                 .findFirst();
         directorData.ifPresent(d -> {
             Director director = directorRepository.findById(d.id())
-                    .orElseGet(() -> directorRepository.save(new Director(d.id(), d.name(), baseImageUrl + d.profilePath())));
+                    .orElseGet(() -> directorRepository.save(new Director(d.id(), d.name(), baseImageUrl + "/w185" + d.profilePath())));
             movie.setDirector(director);
         });
 
