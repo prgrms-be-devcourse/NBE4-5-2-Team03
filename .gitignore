@@ -37,5 +37,5 @@ out/
 .vscode/
 
 ### custom ###
-application-apikey.yml
 apiV1.json
+.env
