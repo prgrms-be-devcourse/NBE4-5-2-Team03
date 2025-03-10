@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Transactional
 class MovieServiceTest {
     @Autowired
@@ -95,7 +97,7 @@ class MovieServiceTest {
     }
 
     @Test
-    @DisplayName("영화 목록 조회 - 성공 - 리뷰수 순 정렬")
+    @DisplayName("영화 목록 조회 - 성공 - 리뷰 많은 순 정렬")
     void getMovies4() {
         String keyword = "";
         int page = 1;
@@ -156,6 +158,7 @@ class MovieServiceTest {
 
         movie.setFetchDate(LocalDate.now().minusDays(10));
         movie.setProductionCountry(null);
+        movie.setStatus("Planned");
 
         movieRepository.save(movie);
 
