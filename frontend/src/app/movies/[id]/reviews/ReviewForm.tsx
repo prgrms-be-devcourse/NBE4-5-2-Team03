@@ -100,15 +100,28 @@ export default function ReviewForm({
         ))}
       </div>
 
-      <Input
-        type="text"
-        placeholder="리뷰를 입력하세요"
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-      />
-      <Button onClick={handleSubmit} disabled={loading}>
-        {loading ? "등록 중..." : "리뷰 작성"}
-      </Button>
+      {/* --- [리뷰 입력 칸 & 버튼 UI] --- */}
+      <div className="flex">
+        <Input
+          type="text"
+          placeholder="리뷰를 입력하세요"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          className="mr-2 h-10"
+          onKeyDown={(e) => {
+            // 엔터 키 감지 및 로딩 상태 확인
+            if (e.key === "Enter" && !loading) {
+              // handleSubmit 함수 호출
+              handleSubmit();
+              // 기본 엔터 키 동작 (새 줄 추가) 방지
+              e.preventDefault;
+            }
+          }}
+        />
+        <Button onClick={handleSubmit} disabled={loading} className="h-10">
+          {loading ? "등록 중..." : "리뷰 작성"}
+        </Button>
+      </div>
     </div>
   );
 }
