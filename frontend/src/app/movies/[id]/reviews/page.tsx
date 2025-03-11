@@ -8,13 +8,13 @@ export default async function Page({
   params: { id: string };
   searchParams: { page?: string };
 }) {
-  const id = params.id;
+  const { id } = await params;
   const movie_id = parseInt(id, 10);
 
   console.log(`Fetching reviews for movie_id: ${movie_id}`);
 
   // 특정 영화의 리뷰 목록 가져오기
-  const response = await client.GET("/api/reviews/movie/{movie_id}" as any, {
+  const response = await client.GET(`/api/reviews/movie/${movie_id}` as any, {
     params: { path: { movie_id } },
   });
 
@@ -23,5 +23,5 @@ export default async function Page({
     return <div>에러 발생: {response.error.message}</div>;
   }
 
-  return <ClientPage data={response.data} movieId={movie_id} />;
+  return <ClientPage movieId={movie_id} />;
 }
