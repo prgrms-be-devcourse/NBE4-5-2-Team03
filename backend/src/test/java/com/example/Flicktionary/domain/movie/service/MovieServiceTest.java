@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
@@ -19,6 +20,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
+@ActiveProfiles("test")
 @Transactional
 class MovieServiceTest {
     @Autowired
@@ -136,13 +138,13 @@ class MovieServiceTest {
         long id = 1L;
 
         MovieResponseWithDetail result = movieService.getMovie(id);
-        Movie movie = movieRepository.findByIdWithActorsAndDirector(id).get();
+        Movie movie = movieRepository.findByIdWithCastsAndDirector(id).get();
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo(id);
         assertThat(result.getTmdbId()).isEqualTo(movie.getTmdbId());
         assertThat(result.getTitle()).isEqualTo(movie.getTitle());
-        assertThat(result.getActors().getFirst().getId()).isEqualTo(movie.getActors().getFirst().getId());
+        assertThat(result.getCasts().getFirst().getCharacterName()).isEqualTo(movie.getCasts().getFirst().getCharacterName());
         assertThat(result.getGenres().getFirst().getName()).isEqualTo(movie.getGenres().getFirst().getName());
         assertThat(movie.getFetchDate()).isAfterOrEqualTo(LocalDate.now().minusDays(7));
     }
@@ -156,6 +158,7 @@ class MovieServiceTest {
 
         movie.setFetchDate(LocalDate.now().minusDays(10));
         movie.setProductionCountry(null);
+        movie.setStatus("Planned");
 
         movieRepository.save(movie);
 

@@ -68,9 +68,9 @@ export default function ClientPage({
         <div className="flex">
           <Card className="w-40 flex flex-col items-center p-4 shadow-md">
             <img
-              src={"/no-image.png"} // 프로필 이미지 (임시)
+              src={data.director?.profilePath || "/no-image.png"} // 프로필 이미지 (임시)
               alt={data.director?.name}
-              className="w-20 h-20 object-cover rounded-full border mb-3"
+              className="w-30 h-30 object-cover border-2 mb-3 shadow-sm rounded-lg"
             />
             <h3 className="text-lg font-semibold text-center">
               {data.director?.name || "미정"}
@@ -83,19 +83,22 @@ export default function ClientPage({
       <div>
         <h2 className="text-2xl font-bold mb-4">🎭 배우</h2>
         <div className="grid grid-cols-5 gap-6">
-          {data.actors?.map((actor) => (
+          {data.casts?.map((cast) => (
             <Card
-              key={actor.id}
+              key={cast.actor.id}
               className="flex flex-col items-center p-4 shadow-md w-40"
             >
               <img
-                src={"/no-image.png"} // 프로필 이미지 (임시)
-                alt={actor.name}
-                className="w-20 h-20 object-cover rounded-full border mb-3"
+                src={cast.actor.profilePath || "/no-image.png"}
+                alt={cast.actor.name}
+                className="w-30 h-30 object-cover border-2 mb-3 shadow-sm rounded-lg"
               />
-              <h3 className="text-lg font-semibold text-center">
-                {actor.name}
+              <h3 className="text-base font-semibold text-center w-full truncate">
+                {cast.actor.name}
               </h3>
+              <p className="text-sm text-gray-500 text-center w-full truncate">
+                {cast.characterName ? `${cast.characterName}` : "배역 미정"}
+              </p>
             </Card>
           ))}
         </div>

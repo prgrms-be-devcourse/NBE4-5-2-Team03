@@ -15,8 +15,9 @@ public interface MovieRepository extends JpaRepository<Movie, Long> {
     Page<Movie> findByTitleLike(String keyword, Pageable pageable);
 
     @Query("SELECT DISTINCT m FROM Movie m " +
-            "LEFT JOIN FETCH m.actors a " +
+            "LEFT JOIN FETCH m.casts c " +
+            "LEFT JOIN FETCH c.actor a " +
             "LEFT JOIN FETCH m.director d " +
             "WHERE m.id = :id")
-    Optional<Movie> findByIdWithActorsAndDirector(Long id);
+    Optional<Movie> findByIdWithCastsAndDirector(Long id);
 }

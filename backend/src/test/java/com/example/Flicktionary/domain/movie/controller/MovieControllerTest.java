@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,6 +21,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@ActiveProfiles("test")
 @Transactional
 class MovieControllerTest {
     @Autowired
@@ -97,7 +99,7 @@ class MovieControllerTest {
                 .andExpect(jsonPath("$.id").value(result.getId()))
                 .andExpect(jsonPath("$.tmdbId").value(result.getTmdbId()))
                 .andExpect(jsonPath("$.title").value(result.getTitle()))
-                .andExpect(jsonPath("$.actors[0].id").value(result.getActors().getFirst().getId()))
+                .andExpect(jsonPath("$.casts[0].characterName").value(result.getCasts().getFirst().getCharacterName()))
                 .andExpect(jsonPath("$.genres[0].id").value(result.getGenres().getFirst().getId()));
     }
 

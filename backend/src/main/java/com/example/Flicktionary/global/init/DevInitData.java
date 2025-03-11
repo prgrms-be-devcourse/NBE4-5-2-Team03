@@ -17,7 +17,7 @@ import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.List;
 
-@Profile("dev")
+@Profile("prod")
 @Configuration
 public class DevInitData {
 

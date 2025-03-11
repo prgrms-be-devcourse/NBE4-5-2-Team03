@@ -8,6 +8,7 @@ import com.example.Flicktionary.global.utils.JwtUtils;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
@@ -92,6 +93,24 @@ public class UserAccountController {
         response.addCookie(refreshToken);
 
         return ResponseEntity.ok("토큰이 성공적으로 재발행되었습니다.");
+    }
+
+    /**
+     * 인증 정보를 HttpOnly 쿠키로 저장하기 때문에, 클라이언트는 현재 로그인 상태를 알 수 없다. 이를 해결하기 위해 서버에 요청을 보내
+     * 인증 쿠키의 유무에 따른 응답을 반환한다.
+     * @param accessToken 접근 토큰 문자열
+     * @param refreshToken 리프레시 토큰 문자열
+     * @return ResponseEntity 오브젝트
+     */
+    @GetMapping("/status")
+    public ResponseEntity<String> verifyUserHasCredentials(
+            @CookieValue(value = "accessToken", required = false) String accessToken,
+            @CookieValue(value = "refreshToken", required = false) String refreshToken
+    ) {
+        if (accessToken == null || refreshToken == null || accessToken.isEmpty() || refreshToken.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("인증 정보가 존재하지 않습니다.");
+        }
+        return ResponseEntity.ok("인증 정보가 존재합니다.");
     }
 
     /**

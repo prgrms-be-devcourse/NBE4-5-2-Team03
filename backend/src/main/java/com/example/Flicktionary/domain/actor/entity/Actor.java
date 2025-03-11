@@ -15,4 +15,5 @@ public class Actor {
     @Column(nullable = false)
     private String name;
 
+    private String profilePath;
 }

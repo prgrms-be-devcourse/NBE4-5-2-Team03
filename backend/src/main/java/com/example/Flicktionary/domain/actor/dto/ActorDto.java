@@ -12,8 +12,9 @@ public class ActorDto {
     private final Long id;
     @NonNull
     private final String name;
+    private final String profilePath;
 
     public ActorDto(Actor actor) {
-        this(actor.getId(), actor.getName());
+        this(actor.getId(), actor.getName(), actor.getProfilePath());
     }
 }

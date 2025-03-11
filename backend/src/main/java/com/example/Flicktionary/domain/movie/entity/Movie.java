@@ -1,6 +1,5 @@
 package com.example.Flicktionary.domain.movie.entity;
 
-import com.example.Flicktionary.domain.actor.entity.Actor;
 import com.example.Flicktionary.domain.director.entity.Director;
 import com.example.Flicktionary.domain.genre.entity.Genre;
 import com.example.Flicktionary.domain.review.entity.Review;
@@ -58,14 +57,9 @@ public class Movie {
     @Builder.Default
     private List<Genre> genres = new ArrayList<>();
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "movie_actor",
-            joinColumns = @JoinColumn(name = "movie_id"),
-            inverseJoinColumns = @JoinColumn(name = "actor_id")
-    )
+    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
-    private List<Actor> actors = new ArrayList<>();
+    private List<MovieCast> casts = new ArrayList<>();
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "director_id")

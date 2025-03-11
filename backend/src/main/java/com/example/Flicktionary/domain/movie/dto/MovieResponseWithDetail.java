@@ -1,6 +1,5 @@
 package com.example.Flicktionary.domain.movie.dto;
 
-import com.example.Flicktionary.domain.actor.dto.ActorDto;
 import com.example.Flicktionary.domain.director.dto.DirectorDto;
 import com.example.Flicktionary.domain.genre.dto.GenreDto;
 import com.example.Flicktionary.domain.movie.entity.Movie;
@@ -32,7 +31,7 @@ public class MovieResponseWithDetail {
     @NonNull
     private final int ratingCount;
     private final List<GenreDto> genres;
-    private final List<ActorDto> actors;
+    private final List<MovieCastDto> casts;
     private final DirectorDto director;
 
     public MovieResponseWithDetail(Movie movie) {
@@ -49,7 +48,7 @@ public class MovieResponseWithDetail {
                 movie.getAverageRating(),
                 movie.getRatingCount(),
                 movie.getGenres().stream().map(g -> new GenreDto(g.getId(), g.getName())).toList(),
-                movie.getActors().stream().map(ActorDto::new).toList(),
+                movie.getCasts().stream().map(MovieCastDto::new).toList(),
                 new DirectorDto(movie.getDirector())
         );
     }

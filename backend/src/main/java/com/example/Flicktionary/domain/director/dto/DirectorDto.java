@@ -12,8 +12,9 @@ public class DirectorDto {
     private final Long id;
     @NonNull
     private final String name;
+    private final String profilePath;
 
     public DirectorDto(Director director) {
-        this(director.getId(), director.getName());
+        this(director.getId(), director.getName(), director.getProfilePath());
     }
 }

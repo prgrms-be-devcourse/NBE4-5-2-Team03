@@ -2,30 +2,17 @@ server:
   port: 8080
 
 spring:
-  config:
-    import: classpath:application-apikey.yml
-
   output:
     ansi:
       enabled: always
 
-  profiles:
-    active: dev
-#    include: test
-
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://localhost:3306/flicktionary
-    username: root
-    password: lldj123414
+  config:
+    import: "optional:file:.env[.properties]"
 
   jpa:
     database: mysql
     database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: false
-    hibernate:
-      ddl-auto: update
-#      ddl-auto: create
     show-sql: false
     properties:
       hibernate:
@@ -34,12 +21,10 @@ spring:
         use_sql_comments: true
         default_batch_fetch_size: 10
 
-logging:
-  level:
-    org.hibernate.SQL: DEBUG
-    org.hibernate.orm.jdbc.bind: TRACE
-    org.hibernate.orm.jdbc.extract: TRACE
-    org.springframework.transaction.interceptor: TRACE
+
+tmdb:
+  access-token: ${TMDB_ACCESS_TOKEN}
+  base-image-url: ${TMDB_BASE_IMAGE_URL}
 
 custom:
   jwt:

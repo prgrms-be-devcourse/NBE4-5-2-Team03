@@ -6,12 +6,12 @@ import java.util.List;
 
 public record TmdbMovieResponseWithDetail(
         @JsonProperty("id") Long tmdbId,
-        String title,
-        String overview,
+        @JsonProperty("title") String title,
+        @JsonProperty("overview") String overview,
         @JsonProperty("release_date") String releaseDate,
-        String status,
+        @JsonProperty("status") String status,
         @JsonProperty("poster_path") String posterPath,
-        Integer runtime,
+        @JsonProperty("runtime") Integer runtime,
         @JsonProperty("production_countries") List<TmdbProductionCountry> productionCountries,
         @JsonProperty("production_companies") List<TmdbProductionCompany> productionCompanies,
         @JsonProperty("genres") List<TmdbGenre> genres,
@@ -23,16 +23,23 @@ public record TmdbMovieResponseWithDetail(
     public record TmdbProductionCompany(@JsonProperty("name") String name) {
     }
 
-    public record TmdbGenre(@JsonProperty("id") Long id, @JsonProperty("name") String name) {
+    public record TmdbGenre(@JsonProperty("id") Long id,
+                            @JsonProperty("name") String name) {
     }
 
-    public record TmdbCredits(@JsonProperty("cast") List<TmdbActor> cast, @JsonProperty("crew") List<TmdbCrew> crew) {
+    public record TmdbCredits(@JsonProperty("cast") List<TmdbActor> cast,
+                              @JsonProperty("crew") List<TmdbCrew> crew) {
     }
 
-    public record TmdbActor(@JsonProperty("id") Long id, @JsonProperty("name") String name) {
+    public record TmdbActor(@JsonProperty("id") Long id,
+                            @JsonProperty("name") String name,
+                            @JsonProperty("profile_path") String profilePath,
+                            @JsonProperty("character") String character) {
     }
 
-    public record TmdbCrew(@JsonProperty("id") Long id, @JsonProperty("name") String name,
+    public record TmdbCrew(@JsonProperty("id") Long id,
+                           @JsonProperty("name") String name,
+                           @JsonProperty("profile_path") String profilePath,
                            @JsonProperty("job") String job) {
     }
 

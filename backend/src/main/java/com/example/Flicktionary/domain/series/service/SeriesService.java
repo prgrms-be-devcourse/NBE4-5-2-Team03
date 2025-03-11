@@ -56,7 +56,7 @@ public class SeriesService {
     @PostConstruct
     public void fetchPopularSeries() {
 
-        if(seriesRepository.count() > 0){
+        if (seriesRepository.count() > 0) {
             return;
         }
 
@@ -131,7 +131,7 @@ public class SeriesService {
                     .map(actorDto ->
                             actorRepository.findById(actorDto.id())
                                     .orElseGet(() -> {
-                                        Actor newActor = new Actor(actorDto.id(), actorDto.name());
+                                        Actor newActor = new Actor(actorDto.id(), actorDto.name(), actorDto.profilePath());
                                         actorRepository.save(newActor);
                                         return newActor;
                                     })
@@ -144,7 +144,7 @@ public class SeriesService {
                     .map(directorDto ->
                             directorRepository.findById(directorDto.id())
                                     .orElseGet(() -> {
-                                        Director newDirector = new Director(directorDto.id(), directorDto.name());
+                                        Director newDirector = new Director(directorDto.id(), directorDto.name(), directorDto.profilePath());
                                         directorRepository.save(newDirector);
                                         return newDirector;
                                     })
@@ -170,10 +170,10 @@ public class SeriesService {
         series.setEpisode(body.getNumberOfEpisodes());
         series.setStatus(body.getStatus());
         series.setImageUrl(baseImageUrl + body.getPosterPath());
-        if(body.getFirstAirDate() != null){
+        if (body.getFirstAirDate() != null) {
             series.setReleaseStartDate(LocalDate.parse(body.getFirstAirDate()));
         }
-        if(body.getLastAirDate() != null){
+        if (body.getLastAirDate() != null) {
             series.setReleaseEndDate(LocalDate.parse(body.getLastAirDate()));
         }
     }
@@ -182,21 +182,21 @@ public class SeriesService {
     public Page<Series> getSeries(String keyword, int page, int pageSize, String sortBy) {
         Sort sort;
 
-        if(sortBy.equalsIgnoreCase("id")){ //ID기준 오름차순
+        if (sortBy.equalsIgnoreCase("id")) { //ID기준 오름차순
             sort = Sort.by("id").ascending();
-        }else if(sortBy.equalsIgnoreCase("rating")) { //평점 기준 내림차순
+        } else if (sortBy.equalsIgnoreCase("rating")) { //평점 기준 내림차순
             sort = Sort.by("averageRating").descending();
-        }else if(sortBy.equalsIgnoreCase("rating-count")) { //리뷰 개수 내림차순
+        } else if (sortBy.equalsIgnoreCase("rating-count")) { //리뷰 개수 내림차순
             sort = Sort.by("ratingCount").descending();
-        }else{
+        } else {
             throw new RuntimeException("잘못된 정렬 방식입니다.");
         }
 
-        if(page < 1){
+        if (page < 1) {
             throw new RuntimeException("페이지는 1부터 요청 가능합니다.");
         }
 
-        Pageable pageable = PageRequest.of(page-1, pageSize, sort);
+        Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
         return seriesRepository.findByTitleLike(keyword, pageable);
     }
 

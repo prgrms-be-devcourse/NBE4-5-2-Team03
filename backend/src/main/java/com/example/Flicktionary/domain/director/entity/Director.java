@@ -14,4 +14,6 @@ public class Director {
 
     @Column(nullable = false)
     private String name;
+
+    private String profilePath;
 }
