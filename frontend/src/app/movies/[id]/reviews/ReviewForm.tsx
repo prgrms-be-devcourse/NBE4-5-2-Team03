@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -19,6 +19,7 @@ export default function ReviewForm({
   // 호버된 별점 상태
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
 
   const handleSubmit = async () => {
     if (!content.trim()) return alert("리뷰를 입력해주세요.");
@@ -76,6 +77,15 @@ export default function ReviewForm({
     }
   };
 
+  const handleResizeTextarea = () => {
+    // textarea 높이 자동 조절 함수
+    if (textareaRef.current) {
+      // textareaRef.current 가 null 이 아닌지 확인
+      textareaRef.current.style.height = "auto"; // 높이를 auto 로 설정하여 내용에 맞게 자동 조절
+      textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`; // scrollHeight 를 이용하여 실제 필요한 높이로 설정
+    }
+  };
+
   return (
     <div className="mb-6">
       {/* 별점 선택 UI*/}
@@ -102,12 +112,16 @@ export default function ReviewForm({
 
       {/* --- [리뷰 입력 칸 & 버튼 UI] --- */}
       <div className="flex">
-        <Input
-          type="text"
+        <textarea
+          ref={textareaRef}
           placeholder="리뷰를 입력하세요"
           value={content}
-          onChange={(e) => setContent(e.target.value)}
-          className="mr-2 h-10"
+          onChange={(e) => {
+            setContent(e.target.value);
+            // 내용 변경 시 textarea 높이 자동 조절
+            handleResizeTextarea();
+          }}
+          className="mr-2 border p-2 rounded-md resize-none overflow-hidden focus:ring-blue-500 focus:border-blue-500 block w-full text-gray-900 placeholder-gray-500 flex-1 min-w-0"
           onKeyDown={(e) => {
             // 엔터 키 감지 및 로딩 상태 확인
             if (e.key === "Enter" && !loading) {
