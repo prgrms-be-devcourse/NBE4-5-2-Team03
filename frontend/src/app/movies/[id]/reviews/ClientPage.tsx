@@ -59,7 +59,7 @@ export default function ClientPage({ movieId }: { movieId: number }) {
 
   const pageNumbers = [];
   for (let i = pageGroupStart; i < pageGroupStart + 10; i++) {
-    if (i > totalPages) break;
+    if (i >= totalPages) break;
     pageNumbers.push(i);
   }
 
