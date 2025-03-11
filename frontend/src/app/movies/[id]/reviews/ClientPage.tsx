@@ -69,50 +69,56 @@ export default function ClientPage({ movieId }: { movieId: number }) {
 
       <ReviewForm movieId={movieId} onReviewAdded={handleReviewAdded} />
 
-      <div className="space-y-4">
-        {reviews.map((review) => (
-          <Card key={review?.id}>
-            <CardContent>
-              <div className="flex items-center justify-between">
-                <p className="font-semibold">{review?.nickname || "익명"}</p>
-                <div className="flex">
-                  {Array.from({ length: review?.rating || 0 }, (_, i) => (
-                    <span key={i}>⭐</span>
-                  ))}
-                </div>
-              </div>
-              <p>{review?.content}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <Card className="border border-gray-200 rounded-md">
+        <CardContent className="p-6">
+          <div className="space-y-4">
+            {reviews.map((review) => (
+              <Card key={review?.id} className="border border-gray-200">
+                <CardContent>
+                  <div className="flex items-center justify-between">
+                    <p className="font-semibold">
+                      {review?.nickname || "익명"}
+                    </p>
+                    <div className="flex">
+                      {Array.from({ length: review?.rating || 0 }, (_, i) => (
+                        <span key={i}>⭐</span>
+                      ))}
+                    </div>
+                  </div>
+                  <p className="mt-2">{review?.content}</p>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
 
-      <div className="flex justify-center mt-4">
-        <Button
-          onClick={handlePrevGroup}
-          disabled={pageGroupStart === 0}
-          variant="outline"
-        >
-          <ChevronLeftIcon className="h-5 w-5" />
-        </Button>
-        {pageNumbers.map((page) => (
-          <Button
-            key={page}
-            variant={currentPage === page ? "default" : "outline"}
-            onClick={() => handlePageChange(page)}
-            disabled={currentPage === page}
-          >
-            {page + 1}
-          </Button>
-        ))}
-        <Button
-          onClick={handleNextGroup}
-          disabled={pageGroupStart + 9 >= totalPages}
-          variant="outline"
-        >
-          <ChevronRightIcon className="h-5 w-5" />
-        </Button>
-      </div>
+          <div className="flex justify-center mt-4">
+            <Button
+              onClick={handlePrevGroup}
+              disabled={pageGroupStart === 0}
+              variant="outline"
+            >
+              <ChevronLeftIcon className="h-5 w-5" />
+            </Button>
+            {pageNumbers.map((page) => (
+              <Button
+                key={page}
+                variant={currentPage === page ? "default" : "outline"}
+                onClick={() => handlePageChange(page)}
+                disabled={currentPage === page}
+              >
+                {page + 1}
+              </Button>
+            ))}
+            <Button
+              onClick={handleNextGroup}
+              disabled={pageGroupStart + 9 >= totalPages}
+              variant="outline"
+            >
+              <ChevronRightIcon className="h-5 w-5" />
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }
