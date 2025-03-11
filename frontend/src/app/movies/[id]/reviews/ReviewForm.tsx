@@ -14,11 +14,15 @@ export default function ReviewForm({
 }) {
   const router = useRouter();
   const [content, setContent] = useState("");
-  const [rating, setRating] = useState(5);
+  // 평점 상태를 null 로 초기화, 선택되지 않았을 때 null 값 가짐
+  const [rating, setRating] = useState<number | null>(null);
+  // 호버된 별점 상태
+  const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
     if (!content.trim()) return alert("리뷰를 입력해주세요.");
+    if (rating === null) return alert("평점을 선택해주세요.");
 
     setLoading(true);
 
@@ -28,7 +32,7 @@ export default function ReviewForm({
       userAccountId: 1, // 임시로 1로 설정
       movieId: Number(movieId),
       content,
-      rating,
+      rating: rating,
     };
 
     // 디버깅용 콘솔 로그
@@ -62,7 +66,7 @@ export default function ReviewForm({
       // 최신 리뷰 추가
       onReviewAdded(newReview);
       setContent("");
-      setRating(5);
+      setRating(null);
       setLoading(false);
     } catch (error) {
       console.error("네트워크 오류:", error);
@@ -74,6 +78,28 @@ export default function ReviewForm({
 
   return (
     <div className="mb-6">
+      {/* 별점 선택 UI*/}
+      <div className="flex items-center mb-2">
+        <p className="mr-2 font-semibold">평점:</p>
+        {[1, 2, 3, 4, 5].map((starRating) => (
+          <span
+            key={starRating}
+            className="text-2xl cursor-pointer"
+            style={{
+              color:
+                starRating <= (hoverRating || rating || 0)
+                  ? "gold"
+                  : "lightgray",
+            }} // 조건부 색상 변경: 선택/호버 시 "까만색", 아니면 "lightgray"
+            onClick={() => setRating(starRating)}
+            onMouseEnter={() => setHoverRating(starRating)}
+            onMouseLeave={() => setHoverRating(null)}
+          >
+            ★
+          </span>
+        ))}
+      </div>
+
       <Input
         type="text"
         placeholder="리뷰를 입력하세요"
