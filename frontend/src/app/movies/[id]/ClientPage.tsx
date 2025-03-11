@@ -68,7 +68,7 @@ export default function ClientPage({
         <div className="flex">
           <Card className="w-40 flex flex-col items-center p-4 shadow-md">
             <img
-              src={data.director?.profilePath || "/no-image.png"} // 프로필 이미지 (임시)
+              src={data.director?.profilePath || "/no-image.png"}
               alt={data.director?.name}
               className="w-30 h-30 object-cover border-2 mb-3 shadow-sm rounded-lg"
             />

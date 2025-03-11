@@ -15,6 +15,8 @@ public class DirectorDto {
     private final String profilePath;
 
     public DirectorDto(Director director) {
-        this(director.getId(), director.getName(), director.getProfilePath());
+        this(director.getId(),
+                director.getName(),
+                (director.getProfilePath() == null ? null : "https://image.tmdb.org/t/p/w" + director.getProfilePath()));
     }
 }

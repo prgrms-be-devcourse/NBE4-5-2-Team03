@@ -14,7 +14,7 @@ public record MovieDto(Long id, String title, String overview,
                 .title(this.title)
                 .overview(this.overview)
                 .releaseDate(releaseDate.isEmpty() ? null : LocalDate.parse(this.releaseDate))
-                .posterPath(baseImageUrl + this.posterPath)
+                .posterPath(this.posterPath == null ? null : baseImageUrl + "/w342" + this.posterPath)
                 .build();
     }
 }

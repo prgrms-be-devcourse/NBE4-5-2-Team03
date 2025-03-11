@@ -49,7 +49,7 @@ public class MovieResponseWithDetail {
                 movie.getRatingCount(),
                 movie.getGenres().stream().map(g -> new GenreDto(g.getId(), g.getName())).toList(),
                 movie.getCasts().stream().map(MovieCastDto::new).toList(),
-                new DirectorDto(movie.getDirector())
+                movie.getDirector() == null ? null : new DirectorDto(movie.getDirector())
         );
     }
 }
