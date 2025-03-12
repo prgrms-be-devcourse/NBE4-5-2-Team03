@@ -49,12 +49,12 @@ export default function ClientPage({ movieId }: { movieId: number }) {
 
   const handlePrevGroup = () => {
     setPageGroupStart((prev) => Math.max(0, prev - 10));
-    setCurrentPage(Math.max(0, currentPage - 10));
+    setCurrentPage(Math.max(0, pageGroupStart - 10));
   };
 
   const handleNextGroup = () => {
     setPageGroupStart((prev) => prev + 10);
-    setCurrentPage(currentPage + 10);
+    setCurrentPage(pageGroupStart + 10);
   };
 
   const pageNumbers = [];
