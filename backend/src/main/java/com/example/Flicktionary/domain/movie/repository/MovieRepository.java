@@ -11,7 +11,7 @@ import java.util.Optional;
 public interface MovieRepository extends JpaRepository<Movie, Long> {
     Optional<Movie> findByTmdbId(long tmdbId);
 
-    @Query("SELECT m FROM Movie m WHERE m.title LIKE CONCAT('%', :keyword, '%')")
+    @Query("SELECT m FROM Movie m WHERE LOWER(REPLACE(m.title, ' ', '')) LIKE CONCAT('%', :keyword, '%')")
     Page<Movie> findByTitleLike(String keyword, Pageable pageable);
 
     @Query("SELECT DISTINCT m FROM Movie m " +

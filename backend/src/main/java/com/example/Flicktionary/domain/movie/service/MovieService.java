@@ -81,13 +81,14 @@ public class MovieService {
     public PageDto<MovieResponse> getMovies(String keyword, int page, int pageSize, String sortBy) {
         Sort sort = getSort(sortBy);
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
+        String formattedKeyword = keyword.toLowerCase().replaceAll(" ", "");
 
-        Page<Movie> movies = movieRepository.findByTitleLike(keyword, pageable);
+        Page<Movie> movies = movieRepository.findByTitleLike(formattedKeyword, pageable);
 
         // 검색 결과가 없으면 tmdb api를 통해 데이터를 가져옵니다.
         if (movies.isEmpty()) {
             fetchAndSaveMovies(keyword);
-            movies = movieRepository.findByTitleLike(keyword, pageable);
+            movies = movieRepository.findByTitleLike(formattedKeyword, pageable);
         }
 
         return new PageDto<>(movies.map(MovieResponse::new));

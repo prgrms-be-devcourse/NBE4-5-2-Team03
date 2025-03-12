@@ -80,7 +80,6 @@ export default function ClientPage({
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
       <h1 className="text-3xl font-bold mb-6 text-center">🎬 영화 목록</h1>
-
       {/* 검색 바 + 정렬 옵션 + 페이지 크기 선택 */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
         <div className="flex gap-2">
@@ -130,7 +129,6 @@ export default function ClientPage({
           </Select>
         </div>
       </div>
-
       {/* 영화 리스트 */}
       <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-6">
         {movies.map((movie) => (
@@ -163,6 +161,12 @@ export default function ClientPage({
           </Link>
         ))}
       </div>
+
+      {movies.length == 0 && (
+        <p className="col-span-full text-gray-500 text-lg">
+          검색 결과가 없습니다
+        </p>
+      )}
 
       {/* 페이지네이션 */}
       <div className="flex justify-center mt-8 space-x-2">
