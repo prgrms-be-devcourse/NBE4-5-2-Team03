@@ -5,6 +5,7 @@ import com.example.Flicktionary.domain.series.dto.SeriesSummaryResponse;
 import com.example.Flicktionary.domain.series.entity.Series;
 import com.example.Flicktionary.domain.series.service.SeriesService;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
@@ -19,7 +20,7 @@ public class SeriesController {
 
     //Series 목록 조회(페이징, 정렬)
     @GetMapping
-    public ResponseEntity<PageDto<SeriesSummaryResponse>> getSeries(
+    public ResponseEntity<ResponseDto<PageDto<SeriesSummaryResponse>>> getSeries(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize,
@@ -27,13 +28,13 @@ public class SeriesController {
 
         Page<Series> series = seriesService.getSeries(keyword, page, pageSize, sortBy);
         PageDto<SeriesSummaryResponse> pageDto = new PageDto<>(series.map(SeriesSummaryResponse::new));
-        return ResponseEntity.ok(pageDto);
+        return ResponseEntity.ok(ResponseDto.ok(pageDto));
     }
 
     //Series 상세 목록 조회
     @GetMapping("/{id}")
-    public ResponseEntity<SeriesDetailResponse> getSeriesDetail(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<SeriesDetailResponse>> getSeriesDetail(@PathVariable Long id) {
         SeriesDetailResponse seriesDto = seriesService.getSeriesDetail(id);
-        return ResponseEntity.ok(seriesDto);
+        return ResponseEntity.ok(ResponseDto.ok(seriesDto));
     }
 }

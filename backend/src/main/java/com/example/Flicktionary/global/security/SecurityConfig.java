@@ -1,5 +1,7 @@
 package com.example.Flicktionary.global.security;
 
+import com.example.Flicktionary.global.dto.ResponseDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,6 +17,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @RequiredArgsConstructor
 public class SecurityConfig {
 
+    // JSON 직렬/역직렬화 유틸리티 클래스를 따로 구현할지 여부를 고려해볼것
+    private final ObjectMapper objectMapper = new ObjectMapper();
     private final CustomAuthenticationFilter customAuthenticationFilter;
     private final CorsConfig corsConfig;
 
@@ -44,14 +48,22 @@ public class SecurityConfig {
                                         (request, response, authException) -> {
                                             response.setContentType("application/json;charset=UTF-8");
                                             response.setStatus(HttpStatus.FORBIDDEN.value());
-                                            response.getWriter().write("{\"message\": \"인증 토큰이 잘못되었거나 로그인이 필요합니다.\"}");
+                                            response.getWriter().write(
+                                                    objectMapper.writeValueAsString(ResponseDto.of(
+                                                            HttpStatus.FORBIDDEN.value() + "",
+                                                            "인증 토큰이 잘못되었거나 로그인이 필요합니다."
+                                                    )));
                                         }
                                 )
                                 .accessDeniedHandler(
                                         (request, response, authException) -> {
                                             response.setContentType("application/json;charset=UTF-8");
                                             response.setStatus(HttpStatus.UNAUTHORIZED.value());
-                                            response.getWriter().write("{\"message\": \"접근 권한이 없습니다.\"}");
+                                            response.getWriter().write(
+                                                    objectMapper.writeValueAsString(ResponseDto.of(
+                                                            HttpStatus.UNAUTHORIZED.value() + "",
+                                                            "접근 권한이 없습니다."
+                                                    )));
                                         }
                                 )
                 );

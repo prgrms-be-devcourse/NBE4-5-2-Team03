@@ -25,7 +25,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
-@ActiveProfiles("ReviewServiceTest")
+@ActiveProfiles("test")
 @Transactional
 public class ReviewServiceTest {
 
@@ -44,7 +44,7 @@ public class ReviewServiceTest {
     @Autowired
     private SeriesRepository seriesRepository;
 
-    
+
     // 변수 설정
     private UserAccount testUser;
     private Movie testMovie;
@@ -71,6 +71,7 @@ public class ReviewServiceTest {
                 .productionCompany("테스트용 제작사")
                 .status("상영 중")
                 .averageRating(4)
+                .ratingCount(10)
                 .build()
         );
 
@@ -167,6 +168,42 @@ public class ReviewServiceTest {
         /// 검증 ///
         assertThrows(IllegalArgumentException.class, () ->
                 reviewService.createReview(reviewNoRating), "평점이 0이면 예외 발생");
+    }
+
+    @Test
+    @DisplayName("리뷰 작성 시 영화 정보 업데이트")
+    void createReviewUpdateMovie() {
+        int ratingCount = testMovie.getRatingCount();
+        double averageRating = testMovie.getAverageRating();
+        long id = testMovie.getId();
+
+        // 리뷰 생성 및 변수에 저장
+        ReviewDto review = reviewService.createReview(reviewDto1);
+
+        int newRatingCount = ratingCount + 1;
+        double newAverageRating = (averageRating * ratingCount + review.getRating()) / newRatingCount;
+        Movie updatedMovie = movieRepository.findById(id).get();
+
+        assertThat(updatedMovie.getRatingCount()).isEqualTo(newRatingCount);
+        assertThat(updatedMovie.getAverageRating()).isEqualTo(newAverageRating);
+    }
+
+    @Test
+    @DisplayName("리뷰 작성 시 시리즈 정보 업데이트")
+    void createReviewUpdateSeries() {
+        int ratingCount = testSeries.getRatingCount();
+        double averageRating = testSeries.getAverageRating();
+        long id = testSeries.getId();
+
+        // 리뷰 생성 및 변수에 저장
+        ReviewDto review = reviewService.createReview(reviewDto2);
+
+        int newRatingCount = ratingCount + 1;
+        double newAverageRating = (averageRating * ratingCount + review.getRating()) / newRatingCount;
+        Series updatedSeries = seriesRepository.findById(id).get();
+
+        assertThat(updatedSeries.getRatingCount()).isEqualTo(newRatingCount);
+        assertThat(updatedSeries.getAverageRating()).isEqualTo(newAverageRating);
     }
 
     @Test
@@ -267,6 +304,66 @@ public class ReviewServiceTest {
     }
 
     @Test
+    @DisplayName("리뷰 수정 시 영화 정보 업데이트")
+    void updateReviewUpdateMovie() {
+        // 리뷰 생성
+        ReviewDto savedReview = reviewService.createReview(reviewDto1);
+
+        // 수정할 리뷰 내용 변수에 저장
+        ReviewDto updatedReviewDto = ReviewDto.builder()
+                .id(savedReview.getId())
+                .userAccountId(savedReview.getUserAccountId())
+                .nickname(savedReview.getNickname())
+                .movieId(savedReview.getMovieId())
+                .rating(4)
+                .content("(테스트)수정된 리뷰 내용")
+                .build();
+
+        int ratingCount = testMovie.getRatingCount();
+        double averageRating = testMovie.getAverageRating();
+        long id = testMovie.getId();
+
+        // 수정
+        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto);
+
+        double newAverageRating = (averageRating * ratingCount - savedReview.getRating() + review.getRating()) / ratingCount;
+        Movie updatedMovie = movieRepository.findById(id).get();
+
+        assertThat(updatedMovie.getRatingCount()).isEqualTo(ratingCount);
+        assertThat(updatedMovie.getAverageRating()).isEqualTo(newAverageRating);
+    }
+
+    @Test
+    @DisplayName("리뷰 작성 시 시리즈 정보 업데이트")
+    void updateReviewUpdateSeries() {
+        // 리뷰 생성
+        ReviewDto savedReview = reviewService.createReview(reviewDto2);
+
+        // 수정할 리뷰 내용 변수에 저장
+        ReviewDto updatedReviewDto = ReviewDto.builder()
+                .id(savedReview.getId())
+                .userAccountId(savedReview.getUserAccountId())
+                .nickname(savedReview.getNickname())
+                .seriesId(savedReview.getSeriesId())
+                .rating(4)
+                .content("(테스트)수정된 리뷰 내용")
+                .build();
+
+        int ratingCount = testSeries.getRatingCount();
+        double averageRating = testSeries.getAverageRating();
+        long id = testSeries.getId();
+
+        // 수정
+        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto);
+
+        double newAverageRating = (averageRating * ratingCount - savedReview.getRating() + review.getRating()) / ratingCount;
+        Series updatedSeries = seriesRepository.findById(id).get();
+
+        assertThat(updatedSeries.getRatingCount()).isEqualTo(ratingCount);
+        assertThat(updatedSeries.getAverageRating()).isEqualTo(newAverageRating);
+    }
+
+    @Test
     @DisplayName("리뷰 삭제")
     void deleteReview() {
 
@@ -278,6 +375,48 @@ public class ReviewServiceTest {
 
         /// 검증 ///
         assertThat(reviewRepository.findById(savedReview.getId())).isEmpty();
+    }
+
+    @Test
+    @DisplayName("리뷰 수정 시 영화 정보 업데이트")
+    void deleteReviewUpdateMovie() {
+        // 리뷰 생성
+        ReviewDto savedReview = reviewService.createReview(reviewDto1);
+
+        int ratingCount = testMovie.getRatingCount();
+        double averageRating = testMovie.getAverageRating();
+        long id = testMovie.getId();
+
+        // 리뷰 삭제
+        reviewService.deleteReview(savedReview.getId());
+
+        int newRatingCount = ratingCount - 1;
+        double newAverageRating = (averageRating * ratingCount - savedReview.getRating()) / newRatingCount;
+        Movie updatedMovie = movieRepository.findById(id).get();
+
+        assertThat(updatedMovie.getRatingCount()).isEqualTo(newRatingCount);
+        assertThat(updatedMovie.getAverageRating()).isEqualTo(newAverageRating);
+    }
+
+    @Test
+    @DisplayName("리뷰 삭제 시 시리즈 정보 업데이트")
+    void deleteReviewUpdateSeries() {
+        // 리뷰 생성
+        ReviewDto savedReview = reviewService.createReview(reviewDto2);
+
+        int ratingCount = testSeries.getRatingCount();
+        double averageRating = testSeries.getAverageRating();
+        long id = testSeries.getId();
+
+        // 리뷰 삭제
+        reviewService.deleteReview(savedReview.getId());
+
+        int newRatingCount = ratingCount - 1;
+        double newAverageRating = (averageRating * ratingCount - savedReview.getRating()) / newRatingCount;
+        Series updatedSeries = seriesRepository.findById(id).get();
+
+        assertThat(updatedSeries.getRatingCount()).isEqualTo(newRatingCount);
+        assertThat(updatedSeries.getAverageRating()).isEqualTo(newAverageRating);
     }
 
     @Test

@@ -87,11 +87,11 @@ public class SeriesControllerTest {
                 .andExpect(status().isOk())  // HTTP 상태 코드가 200 OK인지 확인
                 .andExpect(handler().handlerType(SeriesController.class))  // 호출된 핸들러가 SeriesController인지 확인
                 .andExpect(handler().methodName("getSeries"))  // 호출된 메서드가 getSeries인지 확인
-                .andExpect(jsonPath("$.items").isArray())  // 응답의 items가 배열인지 확인
-                .andExpect(jsonPath("$.items[0].id").value(result.getItems().get(0).getId()))  // 첫 번째 아이템의 ID 검증
-                .andExpect(jsonPath("$.items[1].id").value(result.getItems().get(1).getId()))  // 두 번째 아이템의 ID 검증
-                .andExpect(jsonPath("$.totalPages").value(result.getTotalPages()))  // 전체 페이지 수 검증
-                .andExpect(jsonPath("$.totalItems").value(result.getTotalItems()));  // 전체 아이템 수 검증
+                .andExpect(jsonPath("$.data.items").isArray())  // 응답의 items가 배열인지 확인
+                .andExpect(jsonPath("$.data.items[0].id").value(result.getItems().get(0).getId()))  // 첫 번째 아이템의 ID 검증
+                .andExpect(jsonPath("$.data.items[1].id").value(result.getItems().get(1).getId()))  // 두 번째 아이템의 ID 검증
+                .andExpect(jsonPath("$.data.totalPages").value(result.getTotalPages()))  // 전체 페이지 수 검증
+                .andExpect(jsonPath("$.data.totalItems").value(result.getTotalItems()));  // 전체 아이템 수 검증
     }
 
     @Test
@@ -124,15 +124,15 @@ public class SeriesControllerTest {
         mvc.perform(get("/api/series/{id}", seriesId)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.id").value(seriesId))
-                .andExpect(jsonPath("$.title").value("Test Series"))
-                .andExpect(jsonPath("$.averageRating").value(4.5))
-                .andExpect(jsonPath("$.ratingCount").value(100))
-                .andExpect(jsonPath("$.episode").value(10))
-                .andExpect(jsonPath("$.plot").value("Test Plot"))
-                .andExpect(jsonPath("$.company").value("Test Company"))
-                .andExpect(jsonPath("$.nation").value("Test Nation"))
-                .andExpect(jsonPath("$.status").value("Completed"))
+                .andExpect(jsonPath("$.data.id").value(seriesId))
+                .andExpect(jsonPath("$.data.title").value("Test Series"))
+                .andExpect(jsonPath("$.data.averageRating").value(4.5))
+                .andExpect(jsonPath("$.data.ratingCount").value(100))
+                .andExpect(jsonPath("$.data.episode").value(10))
+                .andExpect(jsonPath("$.data.plot").value("Test Plot"))
+                .andExpect(jsonPath("$.data.company").value("Test Company"))
+                .andExpect(jsonPath("$.data.nation").value("Test Nation"))
+                .andExpect(jsonPath("$.data.status").value("Completed"))
                 .andDo(print());
     }
 }
