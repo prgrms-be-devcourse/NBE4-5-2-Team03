@@ -141,12 +141,19 @@ export default function MainPage() {
       ) : (
         <div className="relative w-full max-w-6xl mt-6">
           <h3 className="text-xl font-bold mb-4">🎬 평점 TOP 10</h3>
+
+          {/* 왼쪽 스크롤 버튼 */}
           <button
             onClick={scrollLeft}
-            className="absolute left-[-50px] top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full"
+            className="absolute left-0 top-1/2 transform -translate-y-1/2 
+               z-10 bg-white shadow-md p-2 rounded-full opacity-80 
+               hover:opacity-100 transition-opacity"
+            style={{ visibility: "visible" }}
           >
             <ChevronLeft size={24} />
           </button>
+
+          {/* 영화/시리즈 목록 */}
           <div
             ref={scrollRef}
             className="overflow-hidden whitespace-nowrap flex gap-4 px-10 scrollbar-hide"
@@ -185,9 +192,14 @@ export default function MainPage() {
               </Link>
             ))}
           </div>
+
+          {/* 오른쪽 스크롤 버튼 */}
           <button
             onClick={scrollRight}
-            className="absolute right-[-50px] top-1/2 transform -translate-y-1/2 z-10 bg-white shadow-md p-2 rounded-full"
+            className="absolute right-0 top-1/2 transform -translate-y-1/2 
+               z-10 bg-white shadow-md p-2 rounded-full opacity-80 
+               hover:opacity-100 transition-opacity"
+            style={{ visibility: "visible" }}
           >
             <ChevronRight size={24} />
           </button>
