@@ -226,9 +226,9 @@ public class FavoriteControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.curPageNo").value(page))
-                .andExpect(jsonPath("$.pageSize").value(pageSize))
-                .andExpect(jsonPath("$.items").isArray());
+                .andExpect(jsonPath("$.data.curPageNo").value(page))
+                .andExpect(jsonPath("$.data.pageSize").value(pageSize))
+                .andExpect(jsonPath("$.data.items").isArray());
     }
 
     @Test
@@ -254,10 +254,10 @@ public class FavoriteControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.curPageNo").value(page))
-                .andExpect(jsonPath("$.pageSize").value(pageSize))
-                .andExpect(jsonPath("$.sortBy").exists())
-                .andExpect(jsonPath("$.items").isArray());
+                .andExpect(jsonPath("$.data.curPageNo").value(page))
+                .andExpect(jsonPath("$.data.pageSize").value(pageSize))
+                .andExpect(jsonPath("$.data.sortBy").exists())
+                .andExpect(jsonPath("$.data.items").isArray());
     }
 
     @Test
@@ -283,10 +283,10 @@ public class FavoriteControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.curPageNo").value(page))
-                .andExpect(jsonPath("$.pageSize").value(pageSize))
-                .andExpect(jsonPath("$.sortBy").exists())
-                .andExpect(jsonPath("$.items").isArray());
+                .andExpect(jsonPath("$.data.curPageNo").value(page))
+                .andExpect(jsonPath("$.data.pageSize").value(pageSize))
+                .andExpect(jsonPath("$.data.sortBy").exists())
+                .andExpect(jsonPath("$.data.items").isArray());
     }
 
     @Test
@@ -312,10 +312,10 @@ public class FavoriteControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.curPageNo").value(page))
-                .andExpect(jsonPath("$.pageSize").value(pageSize))
-                .andExpect(jsonPath("$.sortBy").exists())
-                .andExpect(jsonPath("$.items").isArray());
+                .andExpect(jsonPath("$.data.curPageNo").value(page))
+                .andExpect(jsonPath("$.data.pageSize").value(pageSize))
+                .andExpect(jsonPath("$.data.sortBy").exists())
+                .andExpect(jsonPath("$.data.items").isArray());
     }
 
     @Test
@@ -341,10 +341,10 @@ public class FavoriteControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.curPageNo").value(page))
-                .andExpect(jsonPath("$.pageSize").value(pageSize))
-                .andExpect(jsonPath("$.sortBy").exists())
-                .andExpect(jsonPath("$.items").isArray());
+                .andExpect(jsonPath("$.data.curPageNo").value(page))
+                .andExpect(jsonPath("$.data.pageSize").value(pageSize))
+                .andExpect(jsonPath("$.data.sortBy").exists())
+                .andExpect(jsonPath("$.data.items").isArray());
     }
 
     @Test
@@ -370,9 +370,9 @@ public class FavoriteControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.curPageNo").value(page))
-                .andExpect(jsonPath("$.pageSize").value(pageSize))
-                .andExpect(jsonPath("$.sortBy").exists())
-                .andExpect(jsonPath("$.items").isArray());
+                .andExpect(jsonPath("$.data.curPageNo").value(page))
+                .andExpect(jsonPath("$.data.pageSize").value(pageSize))
+                .andExpect(jsonPath("$.data.sortBy").exists())
+                .andExpect(jsonPath("$.data.items").isArray());
     }
 }

@@ -52,11 +52,11 @@ class MovieControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(handler().handlerType(MovieController.class))
                 .andExpect(handler().methodName("getMovies"))
-                .andExpect(jsonPath("$.items").isArray())
-                .andExpect(jsonPath("$.items[0].id").value(result.getItems().getFirst().getId()))
-                .andExpect(jsonPath("$.items[1].id").value(result.getItems().get(1).getId()))
-                .andExpect(jsonPath("$.totalPages").value(result.getTotalPages()))
-                .andExpect(jsonPath("$.totalItems").value(result.getTotalItems()));
+                .andExpect(jsonPath("$.data.items").isArray())
+                .andExpect(jsonPath("$.data.items[0].id").value(result.getItems().getFirst().getId()))
+                .andExpect(jsonPath("$.data.items[1].id").value(result.getItems().get(1).getId()))
+                .andExpect(jsonPath("$.data.totalPages").value(result.getTotalPages()))
+                .andExpect(jsonPath("$.data.totalItems").value(result.getTotalItems()));
     }
 
     @Test
@@ -96,11 +96,11 @@ class MovieControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(handler().handlerType(MovieController.class))
                 .andExpect(handler().methodName("getMovie"))
-                .andExpect(jsonPath("$.id").value(result.getId()))
-                .andExpect(jsonPath("$.tmdbId").value(result.getTmdbId()))
-                .andExpect(jsonPath("$.title").value(result.getTitle()))
-                .andExpect(jsonPath("$.casts[0].characterName").value(result.getCasts().getFirst().getCharacterName()))
-                .andExpect(jsonPath("$.genres[0].id").value(result.getGenres().getFirst().getId()));
+                .andExpect(jsonPath("$.data.id").value(result.getId()))
+                .andExpect(jsonPath("$.data.tmdbId").value(result.getTmdbId()))
+                .andExpect(jsonPath("$.data.title").value(result.getTitle()))
+                .andExpect(jsonPath("$.data.casts[0].characterName").value(result.getCasts().getFirst().getCharacterName()))
+                .andExpect(jsonPath("$.data.genres[0].id").value(result.getGenres().getFirst().getId()));
     }
 
     @Test

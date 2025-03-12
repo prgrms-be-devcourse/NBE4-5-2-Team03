@@ -128,7 +128,7 @@ public class ReviewControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(reviewDto1)))
                 .andExpect(status().isCreated()) // 응답 상태 검증
-                .andExpect(jsonPath("$.content") // JSON 응답 검증
+                .andExpect(jsonPath("$.data.content") // JSON 응답 검증
                         .value("테스트용 리뷰 내용 (영화)"));
     }
 
@@ -143,9 +143,9 @@ public class ReviewControllerTest {
         // mockMvc로 get 요청 후 검증
         mockMvc.perform(get("/api/reviews"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].content")
+                .andExpect(jsonPath("$.data[0].content")
                         .value("테스트용 리뷰 내용 (영화)"))
-                .andExpect(jsonPath("$[1].content")
+                .andExpect(jsonPath("$.data[1].content")
                         .value("테스트용 리뷰 내용 (드라마)"));
     }
 
@@ -171,9 +171,9 @@ public class ReviewControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(modifyReview)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.content")
+                .andExpect(jsonPath("$.data.content")
                         .value("수정된 테스트용 리뷰"))
-                .andExpect(jsonPath("$.rating").value(4));
+                .andExpect(jsonPath("$.data.rating").value(4));
     }
 
     @Test
@@ -205,7 +205,7 @@ public class ReviewControllerTest {
                 .param("page", "0")
                 .param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.items[0].content")
+                .andExpect(jsonPath("$.data.items[0].content")
                         .value("테스트용 리뷰 내용 (영화)"));
 
     }
@@ -221,7 +221,7 @@ public class ReviewControllerTest {
                         .param("page", "0")
                         .param("size", "5"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.items[0].content")
+                .andExpect(jsonPath("$.data.items[0].content")
                         .value("테스트용 리뷰 내용 (드라마)"));
 
     }
