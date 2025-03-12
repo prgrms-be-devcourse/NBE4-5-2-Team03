@@ -22,7 +22,7 @@ export default async function Page({
     return <div>{response}</div>;
   }
 
-  const data = response.data;
+  const data = response.data.data;
 
   return <ClientPage data={data} />;
 }
