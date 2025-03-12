@@ -3,6 +3,7 @@ package com.example.Flicktionary.domain.review.controller;
 import com.example.Flicktionary.domain.review.dto.ReviewDto;
 import com.example.Flicktionary.domain.review.service.ReviewService;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,47 +22,51 @@ public class ReviewController {
 
     // 리뷰 생성
     @PostMapping
-    public ResponseEntity<ReviewDto> createReview(@RequestBody ReviewDto reviewDto) {
+    public ResponseEntity<ResponseDto<ReviewDto>> createReview(@RequestBody ReviewDto reviewDto) {
         ReviewDto review = reviewService.createReview(reviewDto);
-        return new ResponseEntity<>(review, HttpStatus.CREATED);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ResponseDto.of(HttpStatus.CREATED.value() + "", HttpStatus.CREATED.getReasonPhrase(), review));
     }
 
     // 모든 리뷰 조회
     @GetMapping
-    public ResponseEntity<List<ReviewDto>> getAllReviews() {
+    public ResponseEntity<ResponseDto<List<ReviewDto>>> getAllReviews() {
         List<ReviewDto> reviews = reviewService.findAllReviews();
-        return new ResponseEntity<>(reviews, HttpStatus.OK);
+        return ResponseEntity.ok(ResponseDto.ok(reviews));
     }
 
     // 리뷰 닉네임과 내용으로 검색
     @GetMapping("/search")
-    public ResponseEntity<PageDto<ReviewDto>> searchReviews(
+    public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> searchReviews(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
 
-        return ResponseEntity.ok(reviewService.searchReviews(keyword, page, size));
+        return ResponseEntity.ok(ResponseDto.ok(reviewService.searchReviews(keyword, page, size)));
     }
 
     // 리뷰 수정
     @PutMapping("/{id}")
-    public ResponseEntity<ReviewDto> updateReview(
+    public ResponseEntity<ResponseDto<ReviewDto>> updateReview(
             @PathVariable Long id,
             @RequestBody ReviewDto reviewDto) {
         ReviewDto review = reviewService.updateReview(id, reviewDto);
-        return new ResponseEntity<>(review, HttpStatus.OK);
+        return ResponseEntity.ok(ResponseDto.ok(review));
     }
 
     // 리뷰 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteReview(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<?>> deleteReview(@PathVariable Long id) {
         reviewService.deleteReview(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(ResponseDto.of(HttpStatus.NO_CONTENT.value() + "", HttpStatus.NO_CONTENT.getReasonPhrase()));
     }
 
+    // TODO: 예외 처리를 서비스 레이어로 옮기는 것을 검토
     // 특정 영화의 리뷰를 페이지로 조회 (0 ~ 5 페이지)
     @GetMapping("/movie/{movie_id}")
-    public ResponseEntity<PageDto<ReviewDto>> reviewMovieDtoPage(
+    public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> reviewMovieDtoPage(
             @PathVariable Long movie_id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
@@ -70,9 +75,9 @@ public class ReviewController {
 
             // 특정 영화 리뷰 페이지를 조회해 변수에 담아 클라이언트에 반환
             PageDto<ReviewDto> reviews = reviewService.reviewMovieDtoPage(movie_id, page, size);
-            return new ResponseEntity<>(reviews, HttpStatus.OK);
+            return ResponseEntity.ok(ResponseDto.ok(reviews));
         } catch (NoSuchElementException e) {
-            
+            // TODO: Spring에서 제공하는 예외를 바로 던질지, 내부에서 따로 예외를 처리할지 여부를 검토
             // 영화를 찾을 수 없을 경우 404 상태 반환
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "영화를 찾을 수 없습니다.");
         } catch (IllegalArgumentException e) {
@@ -89,7 +94,7 @@ public class ReviewController {
 
     // 특정 드라마의 리뷰를 페이지로 조회 (0 ~ 5 페이지)
     @GetMapping("/series/{series_id}")
-    public ResponseEntity<PageDto<ReviewDto>> reviewSeriesDtoPage(
+    public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> reviewSeriesDtoPage(
             @PathVariable Long series_id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
@@ -98,7 +103,7 @@ public class ReviewController {
 
             // 특정 드라마 리뷰 페이지를 조회해 변수에 담아 클라이언트에 반환
             PageDto<ReviewDto> reviews = reviewService.reviewSeriesDtoPage(series_id, page, size);
-            return new ResponseEntity<>(reviews, HttpStatus.OK);
+            return ResponseEntity.ok(ResponseDto.ok(reviews));
         } catch (NoSuchElementException e) {
 
             // 드라마를 찾을 수 없을 경우 404 상태 반환
