@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
@@ -23,8 +23,13 @@ export default function ReviewForm({
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
-  const isLoggedIn = !!localStorage.getItem("token");
+  useEffect(() => {
+    setIsLoggedIn(
+      !!(typeof window !== "undefined" && localStorage.getItem("token"))
+    );
+  });
 
   const handleSubmit = async () => {
     if (!content.trim()) return alert("리뷰를 입력해주세요.");
@@ -78,10 +83,18 @@ export default function ReviewForm({
       console.log("서버 응답 상태:", response.status);
 
       if (!response.ok) {
-        alert("리뷰 작성에 실패했습니다.");
-        setLoading(false);
+        let errorMessage = "리뷰 작성에 실패했습니다.";
+
+        try {
+          const errorData = await response.json();
+          errorMessage = errorData.message || errorMessage;
+        } catch (e) {
+          console.error("에러 응답 파싱 실패함: ", e);
+        }
 
         // 로그
+        alert(errorMessage);
+        setLoading(false);
         const errorData = await response.json();
         console.error("리뷰 작성 실패:", errorData);
         alert(`리뷰 작성 실패: ${errorData.message || response.statusText}`);
