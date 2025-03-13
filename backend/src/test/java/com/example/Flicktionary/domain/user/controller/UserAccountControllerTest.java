@@ -35,22 +35,13 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class UserAccountControllerTest {
 
     @Autowired
-    private final MockMvc mockMvc;
+    private MockMvc mockMvc;
 
     @MockitoBean
     private UserAccountService userAccountService;
 
     @MockitoBean
     private UserAccountJwtAuthenticationService userAccountJwtAuthenticationService;
-
-
-    public UserAccountControllerTest(@Autowired MockMvc mockMvc,
-                                     @Autowired UserAccountService userAccountService,
-                                     @Autowired UserAccountJwtAuthenticationService userAccountJwtAuthenticationService) {
-        this.mockMvc = mockMvc;
-        this.userAccountService = userAccountService;
-        this.userAccountJwtAuthenticationService = userAccountJwtAuthenticationService;
-    }
 
     @DisplayName("회원 가입을 한다.")
     @Test
