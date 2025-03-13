@@ -32,7 +32,7 @@ public class MovieController {
             PageDto<MovieResponse> response = movieService.getMovies(keyword, page, pageSize, sortBy);
             return ResponseEntity.ok(ResponseDto.ok(response));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.of(HttpStatus.BAD_REQUEST.value() + "", HttpStatus.BAD_REQUEST.getReasonPhrase()));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.of(HttpStatus.BAD_REQUEST.value() + "", e.getMessage()));
         }
     }
 
@@ -43,7 +43,7 @@ public class MovieController {
             MovieResponseWithDetail response = movieService.getMovie(id);
             return ResponseEntity.ok(ResponseDto.ok(response));
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDto.of(HttpStatus.NOT_FOUND.value() + "", HttpStatus.NOT_FOUND.getReasonPhrase()));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDto.of(HttpStatus.NOT_FOUND.value() + "", e.getMessage()));
         }
     }
 }
