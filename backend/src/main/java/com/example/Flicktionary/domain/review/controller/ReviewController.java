@@ -4,9 +4,11 @@ import com.example.Flicktionary.domain.review.dto.ReviewDto;
 import com.example.Flicktionary.domain.review.service.ReviewService;
 import com.example.Flicktionary.global.dto.PageDto;
 import com.example.Flicktionary.global.dto.ResponseDto;
+import com.example.Flicktionary.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +22,10 @@ public class ReviewController {
 
     // 리뷰 생성
     @PostMapping
-    public ResponseEntity<ResponseDto<ReviewDto>> createReview(@RequestBody ReviewDto reviewDto) {
-        ReviewDto review = reviewService.createReview(reviewDto);
+    public ResponseEntity<ResponseDto<ReviewDto>> createReview(
+            @RequestBody ReviewDto reviewDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        ReviewDto review = reviewService.createReview(reviewDto, userDetails.getId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ResponseDto.of(HttpStatus.CREATED.value() + "", HttpStatus.CREATED.getReasonPhrase(), review));
     }
@@ -95,15 +99,18 @@ public class ReviewController {
     @PutMapping("/{id}")
     public ResponseEntity<ResponseDto<ReviewDto>> updateReview(
             @PathVariable Long id,
-            @RequestBody ReviewDto reviewDto) {
-        ReviewDto review = reviewService.updateReview(id, reviewDto);
+            @RequestBody ReviewDto reviewDto,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        ReviewDto review = reviewService.updateReview(id, reviewDto, userDetails.getId());
         return ResponseEntity.ok(ResponseDto.ok(review));
     }
 
     // 리뷰 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<?>> deleteReview(@PathVariable Long id) {
-        reviewService.deleteReview(id);
+    public ResponseEntity<ResponseDto<?>> deleteReview(
+            @PathVariable Long id,
+            @AuthenticationPrincipal CustomUserDetails userDetails) {
+        reviewService.deleteReview(id, userDetails.getId());
         return ResponseEntity
                 .status(HttpStatus.NO_CONTENT)
                 .body(ResponseDto.of(HttpStatus.NO_CONTENT.value() + "", HttpStatus.NO_CONTENT.getReasonPhrase()));

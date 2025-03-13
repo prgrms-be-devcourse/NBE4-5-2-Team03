@@ -68,7 +68,7 @@ public class ReviewControllerTest {
 
         // 테스트용 User 엔티티 생성 및 저장
         testUser = userAccountRepository.save(new UserAccount(
-                null, "테스트용 유저", "test12345", "test@email.com", "테스트 유저", UserAccountType.USER
+                1000L, "테스트용 유저", "test12345", "test@email.com", "테스트 유저", UserAccountType.USER
         ));
 
         // 테스트용 Movie 엔티티 생성
@@ -137,8 +137,8 @@ public class ReviewControllerTest {
     void getAllReviews() throws Exception {
 
         // 리뷰 생성
-        reviewService.createReview(reviewDto1);
-        reviewService.createReview(reviewDto2);
+        reviewService.createReview(reviewDto1, 1000L);
+        reviewService.createReview(reviewDto2, 1000L);
 
         // mockMvc로 get 요청 후 검증
         mockMvc.perform(get("/api/reviews"))
@@ -154,7 +154,7 @@ public class ReviewControllerTest {
     void updateReview() throws Exception {
 
         // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto1);
+        ReviewDto savedReview = reviewService.createReview(reviewDto1, 1000L);
 
         // 수정할 리뷰 데이터 생성
         ReviewDto modifyReview = ReviewDto.builder()
@@ -181,7 +181,7 @@ public class ReviewControllerTest {
     void deleteReview() throws Exception {
 
         // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto2);
+        ReviewDto savedReview = reviewService.createReview(reviewDto2, 1000L);
 
         // mockMvc로 delete 요청 후 검증
         mockMvc.perform(delete("/api/reviews/" + savedReview.getId()))
@@ -193,7 +193,7 @@ public class ReviewControllerTest {
     void getReviewMovie() throws Exception {
 
         // 리뷰 생성
-        reviewService.createReview(reviewDto1);
+        reviewService.createReview(reviewDto1, 1000L);
 
         assertThat(testMovie).isNotNull();
         assertThat(movieRepository.findById(testMovie.getId())).isPresent();
@@ -215,7 +215,7 @@ public class ReviewControllerTest {
     void getReviewMovieSeries() throws Exception {
 
         // 리뷰 생성
-        reviewService.createReview(reviewDto2);
+        reviewService.createReview(reviewDto2, 1000L);
 
         mockMvc.perform(get("/api/reviews/series/" + testSeries.getId())
                         .param("page", "0")

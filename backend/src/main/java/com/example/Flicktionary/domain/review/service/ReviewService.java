@@ -32,7 +32,12 @@ public class ReviewService {
     private final SeriesRepository seriesRepository;
 
     // 리뷰 생성
-    public ReviewDto createReview(ReviewDto reviewDto) {
+    public ReviewDto createReview(ReviewDto reviewDto, Long userId) {
+
+        // 사용자 권한 검사. 먼저 user를 찾아 id 저장 없을 경우 오류 호출
+        UserAccount userAccount = userAccountRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException("리뷰 생성 권한이 없습니다."));
+
         // 리뷰 내용이 null이거나 비어있을 경우
         if (reviewDto.getContent() == null || reviewDto.getContent().isBlank()) {
             throw new IllegalArgumentException("리뷰 내용을 입력해주세요.");
@@ -42,10 +47,6 @@ public class ReviewService {
         if (reviewDto.getRating() == 0) {
             throw new IllegalArgumentException("평점을 매겨주세요.");
         }
-
-        // 먼저 user를 찾아 id 저장. 없을 경우 오류 호출
-        UserAccount userAccount = userAccountRepository.findById(reviewDto.getUserAccountId())
-                .orElseThrow(() -> new IllegalArgumentException("찾으시려는 유저 id가 없습니다."));
 
         // 영화를 찾아 저장. 없을 경우 null
         Movie movie = Optional.ofNullable(reviewDto.getMovieId())
@@ -102,11 +103,16 @@ public class ReviewService {
     }
 
     // 리뷰 수정
-    public ReviewDto updateReview(Long id, ReviewDto reviewDto) {
+    public ReviewDto updateReview(Long id, ReviewDto reviewDto, Long userId) {
 
         // id로 리뷰를 찾을 수 없을 경우
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("해당 리뷰를 찾을 수 없습니다."));
+
+        // 사용자 권한 검사
+        if (!userId.equals(review.getUserAccount().getId())) {
+            throw new RuntimeException("리뷰 수정 권한이 없습니다.");
+        }
 
         // 평점을 수정한다면 영화와 시리즈 정보 업데이트
         if (reviewDto.getRating() != 0 && reviewDto.getRating() != review.getRating()) {
@@ -128,11 +134,15 @@ public class ReviewService {
     }
 
     // 리뷰 삭제
-    public void deleteReview(Long id) {
-
+    public void deleteReview(Long id, Long userId) {
         // id로 리뷰를 찾을 수 없을 경우
         Review review = reviewRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("해당 리뷰를 찾을 수 없습니다."));
+
+        // 사용자 권한 검사
+        if (!userId.equals(review.getUserAccount().getId())) {
+            throw new RuntimeException("리뷰 삭제 권한이 없습니다.");
+        }
 
         // 영화, 시리즈 정보 업데이트
         updateRatingAndCount(review.getMovie(), review.getSeries(), -review.getRating(), true);

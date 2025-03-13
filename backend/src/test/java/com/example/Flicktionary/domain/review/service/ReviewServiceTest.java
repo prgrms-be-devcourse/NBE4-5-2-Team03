@@ -57,7 +57,7 @@ public class ReviewServiceTest {
 
         // 테스트용 User 엔티티 생성 및 저장
         testUser = userAccountRepository.save(new UserAccount(
-                null, "테스트용 유저", "test12345", "test@email.com", "테스트 유저", UserAccountType.USER
+                1000L, "테스트용 유저", "test12345", "test@email.com", "테스트 유저", UserAccountType.USER
         ));
 
         // 테스트용 Movie 엔티티 생성
@@ -114,7 +114,7 @@ public class ReviewServiceTest {
     void printReview() {
 
         // 리뷰 생성 및 변수에 저장
-        ReviewDto review = reviewService.createReview(reviewDto1);
+        ReviewDto review = reviewService.createReview(reviewDto1, 1000L);
 
         /// 검증 ///
         assertThat(review).isNotNull();
@@ -147,9 +147,9 @@ public class ReviewServiceTest {
 
         /// 검증 ///
         assertThrows(IllegalArgumentException.class, () ->
-                reviewService.createReview(reviewEmpty), "리뷰 내용이 비어있으면 예외 발생");
+                reviewService.createReview(reviewEmpty, 1000L), "리뷰 내용이 비어있으면 예외 발생");
         assertThrows(IllegalArgumentException.class, () ->
-                reviewService.createReview(reviewNull), "리뷰 내용이 null이면 예외 발생");
+                reviewService.createReview(reviewNull, 1000L), "리뷰 내용이 null이면 예외 발생");
     }
 
     @Test
@@ -167,7 +167,7 @@ public class ReviewServiceTest {
 
         /// 검증 ///
         assertThrows(IllegalArgumentException.class, () ->
-                reviewService.createReview(reviewNoRating), "평점이 0이면 예외 발생");
+                reviewService.createReview(reviewNoRating, 1000L), "평점이 0이면 예외 발생");
     }
 
     @Test
@@ -178,7 +178,7 @@ public class ReviewServiceTest {
         long id = testMovie.getId();
 
         // 리뷰 생성 및 변수에 저장
-        ReviewDto review = reviewService.createReview(reviewDto1);
+        ReviewDto review = reviewService.createReview(reviewDto1, 1000L);
 
         int newRatingCount = ratingCount + 1;
         double newAverageRating = (averageRating * ratingCount + review.getRating()) / newRatingCount;
@@ -196,7 +196,7 @@ public class ReviewServiceTest {
         long id = testSeries.getId();
 
         // 리뷰 생성 및 변수에 저장
-        ReviewDto review = reviewService.createReview(reviewDto2);
+        ReviewDto review = reviewService.createReview(reviewDto2, 1000L);
 
         int newRatingCount = ratingCount + 1;
         double newAverageRating = (averageRating * ratingCount + review.getRating()) / newRatingCount;
@@ -211,8 +211,8 @@ public class ReviewServiceTest {
     void printAllReviews() {
 
         // 리뷰 생성
-        reviewService.createReview(reviewDto1);
-        reviewService.createReview(reviewDto2);
+        reviewService.createReview(reviewDto1, 1000L);
+        reviewService.createReview(reviewDto2, 1000L);
 
         // 모든 리뷰 List 변수에 저장
         List<ReviewDto> reviews = reviewService.findAllReviews();
@@ -233,7 +233,7 @@ public class ReviewServiceTest {
     void printReviewByMovie() {
 
         // 리뷰 생성
-        ReviewDto review = reviewService.createReview(reviewDto1);
+        ReviewDto review = reviewService.createReview(reviewDto1, 1000L);
 
         // 영화 id로 영화를 찾아 리뷰들을 PageDto 변수에 저장
         PageDto<ReviewDto> reviewDtoPageDto = reviewService.reviewMovieDtoPage(reviewDto1.getMovieId(), 0, 5);
@@ -255,7 +255,7 @@ public class ReviewServiceTest {
     void printReviewBySeries() {
 
         // 리뷰 생성
-        ReviewDto review = reviewService.createReview(reviewDto2);
+        ReviewDto review = reviewService.createReview(reviewDto2, 1000L);
 
         // 드라마 id로 드라마를 찾아 리뷰들을 PageDto 변수에 저장
         PageDto<ReviewDto> reviewDtoPageDto = reviewService.reviewSeriesDtoPage(reviewDto2.getSeriesId(), 0, 5);
@@ -277,7 +277,7 @@ public class ReviewServiceTest {
     void updateReview() {
 
         // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto1);
+        ReviewDto savedReview = reviewService.createReview(reviewDto1, 1000L);
 
         // 수정할 리뷰 내용 변수에 저장
         ReviewDto updatedReviewDto = ReviewDto.builder()
@@ -290,7 +290,7 @@ public class ReviewServiceTest {
                 .build();
 
         // 수정
-        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto);
+        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto, 1000L);
 
         /// 검증 ///
         // 출력
@@ -307,7 +307,7 @@ public class ReviewServiceTest {
     @DisplayName("리뷰 수정 시 영화 정보 업데이트")
     void updateReviewUpdateMovie() {
         // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto1);
+        ReviewDto savedReview = reviewService.createReview(reviewDto1, 1000L);
 
         // 수정할 리뷰 내용 변수에 저장
         ReviewDto updatedReviewDto = ReviewDto.builder()
@@ -324,7 +324,7 @@ public class ReviewServiceTest {
         long id = testMovie.getId();
 
         // 수정
-        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto);
+        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto, 1000L);
 
         double newAverageRating = (averageRating * ratingCount - savedReview.getRating() + review.getRating()) / ratingCount;
         Movie updatedMovie = movieRepository.findById(id).get();
@@ -337,7 +337,7 @@ public class ReviewServiceTest {
     @DisplayName("리뷰 작성 시 시리즈 정보 업데이트")
     void updateReviewUpdateSeries() {
         // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto2);
+        ReviewDto savedReview = reviewService.createReview(reviewDto2, 1000L);
 
         // 수정할 리뷰 내용 변수에 저장
         ReviewDto updatedReviewDto = ReviewDto.builder()
@@ -354,7 +354,7 @@ public class ReviewServiceTest {
         long id = testSeries.getId();
 
         // 수정
-        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto);
+        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto, 1000L);
 
         double newAverageRating = (averageRating * ratingCount - savedReview.getRating() + review.getRating()) / ratingCount;
         Series updatedSeries = seriesRepository.findById(id).get();
@@ -368,10 +368,10 @@ public class ReviewServiceTest {
     void deleteReview() {
 
         // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto2);
+        ReviewDto savedReview = reviewService.createReview(reviewDto2, 1000L);
 
         // 리뷰 삭제
-        reviewService.deleteReview(savedReview.getId());
+        reviewService.deleteReview(savedReview.getId(), 1000L);
 
         /// 검증 ///
         assertThat(reviewRepository.findById(savedReview.getId())).isEmpty();
@@ -381,14 +381,14 @@ public class ReviewServiceTest {
     @DisplayName("리뷰 수정 시 영화 정보 업데이트")
     void deleteReviewUpdateMovie() {
         // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto1);
+        ReviewDto savedReview = reviewService.createReview(reviewDto1, 1000L);
 
         int ratingCount = testMovie.getRatingCount();
         double averageRating = testMovie.getAverageRating();
         long id = testMovie.getId();
 
         // 리뷰 삭제
-        reviewService.deleteReview(savedReview.getId());
+        reviewService.deleteReview(savedReview.getId(), 1000L);
 
         int newRatingCount = ratingCount - 1;
         double newAverageRating = (averageRating * ratingCount - savedReview.getRating()) / newRatingCount;
@@ -402,14 +402,14 @@ public class ReviewServiceTest {
     @DisplayName("리뷰 삭제 시 시리즈 정보 업데이트")
     void deleteReviewUpdateSeries() {
         // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto2);
+        ReviewDto savedReview = reviewService.createReview(reviewDto2, 1000L);
 
         int ratingCount = testSeries.getRatingCount();
         double averageRating = testSeries.getAverageRating();
         long id = testSeries.getId();
 
         // 리뷰 삭제
-        reviewService.deleteReview(savedReview.getId());
+        reviewService.deleteReview(savedReview.getId(), 1000L);
 
         int newRatingCount = ratingCount - 1;
         double newAverageRating = (averageRating * ratingCount - savedReview.getRating()) / newRatingCount;
@@ -433,7 +433,7 @@ public class ReviewServiceTest {
                     .content("테스트용 리뷰 내용 " + i)
                     .build();
 
-            reviewService.createReview(savedReview);
+            reviewService.createReview(savedReview, 1000L);
         }
 
         // 페이지와 크기, totalPages는 totalItems / pageSize를 해줌

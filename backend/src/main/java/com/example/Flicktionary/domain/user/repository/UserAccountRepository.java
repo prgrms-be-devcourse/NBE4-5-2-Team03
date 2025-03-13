@@ -14,4 +14,6 @@ import java.util.UUID;
 public interface UserAccountRepository extends JpaRepository<UserAccount, Long> {
     Optional<UserAccount> findByUsername(String username);
     Optional<UserAccount> findByRefreshToken(String refreshToken);
+
+    Object getUserAccountById(Long id);
 }
