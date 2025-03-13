@@ -27,7 +27,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import java.time.LocalDate;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -63,7 +62,7 @@ public class ReviewControllerTest {
 
     // 변수 설정
     private UserAccount testUser = new UserAccount(
-            null, "테스트용 유저", "test12345", "test@email.com", "테스트 유저", UserAccountType.USER
+            10000L, "테스트용 유저", "test12345", "test@email.com", "테스트 유저", UserAccountType.USER
     );
 
     private Movie testMovie = Movie.builder()
@@ -116,7 +115,7 @@ public class ReviewControllerTest {
     @Test
     @DisplayName("리뷰 생성")
     void createReview() throws Exception {
-        given(reviewService.createReview(any(ReviewDto.class))).willReturn(reviewDto1);
+        given(reviewService.createReview(any(ReviewDto.class), 10000L)).willReturn(reviewDto1);
 
         // mockMvc로 post 요청 후 Content-Type 설정과 요청 본문 설정
         mockMvc.perform(post("/api/reviews")
@@ -126,7 +125,7 @@ public class ReviewControllerTest {
                 .andExpect(jsonPath("$.data.content") // JSON 응답 검증
                         .value("테스트용 리뷰 내용 (영화)"));
 
-        then(reviewService).should().createReview(any(ReviewDto.class));
+        then(reviewService).should().createReview(any(ReviewDto.class), 10000L);
     }
 
     @Test
@@ -159,7 +158,7 @@ public class ReviewControllerTest {
                 .rating(4)
                 .content("수정된 테스트용 리뷰")
                 .build();
-        given(reviewService.updateReview(longCaptor.capture(), reviewDtoCaptor.capture()))
+        given(reviewService.updateReview(longCaptor.capture(), reviewDtoCaptor.capture(), 10000L))
                 .willReturn(modifyReview);
 
         // mockMvc로 put 요청 후 검증
@@ -176,14 +175,14 @@ public class ReviewControllerTest {
         assertEquals(modifyReview.getId(), captured.getId());
         assertEquals(modifyReview.getContent(), captured.getContent());
         assertEquals(modifyReview.getRating(), captured.getRating());
-        then(reviewService).should().updateReview(any(Long.class), any(ReviewDto.class));
+        then(reviewService).should().updateReview(any(Long.class), any(ReviewDto.class), 10000L);
     }
 
     @Test
     @DisplayName("리뷰 삭제")
     void deleteReview() throws Exception {
         ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
-        doNothing().when(reviewService).deleteReview(captor.capture());
+        doNothing().when(reviewService).deleteReview(captor.capture(), 10000L);
 
         // mockMvc로 delete 요청 후 검증
         mockMvc.perform(delete("/api/reviews/" + reviewDto1.getId()))
@@ -191,7 +190,7 @@ public class ReviewControllerTest {
         Long captured = captor.getValue();
 
         assertEquals(reviewDto1.getId(), captured);
-        then(reviewService).should().deleteReview(reviewDto1.getId());
+        then(reviewService).should().deleteReview(reviewDto1.getId(), 10000L);
     }
 
     @Test
