@@ -2,7 +2,6 @@ package com.example.Flicktionary.domain.movie.entity;
 
 import com.example.Flicktionary.domain.director.entity.Director;
 import com.example.Flicktionary.domain.genre.entity.Genre;
-import com.example.Flicktionary.domain.review.entity.Review;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -64,8 +63,4 @@ public class Movie {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "director_id")
     private Director director;
-
-    @OneToMany(mappedBy = "movie", cascade = CascadeType.ALL, orphanRemoval = true)
-    @Builder.Default
-    private List<Review> reviews = new ArrayList<>();
 }

@@ -33,7 +33,7 @@ public class SeriesController {
 
     //Series 상세 목록 조회
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<SeriesDetailResponse>> getSeriesDetail(@PathVariable Long id) {
+    public ResponseEntity<ResponseDto<SeriesDetailResponse>> getSeriesDetail(@PathVariable Long id) throws InterruptedException {
         SeriesDetailResponse seriesDto = seriesService.getSeriesDetail(id);
         return ResponseEntity.ok(ResponseDto.ok(seriesDto));
     }

@@ -177,12 +177,13 @@ public class UserAccountController {
      * @param value 쿠키의 값
      * @return 새 쿠키 오브젝트
      */
-    // TODO: Expires / Max-Age 설정 추가
     private Cookie newCookieWithDefaultSettings(String name, String value) {
         Cookie cookie = new Cookie(name, value == null ? "" : value);
         cookie.setHttpOnly(true);
         cookie.setDomain("localhost");
         cookie.setPath("/");
+        // 300일 후 쿠키 만료
+        cookie.setMaxAge(25920000);
         cookie.setAttribute("SameSite", "Strict");
         return cookie;
     }

@@ -7,7 +7,7 @@ import { components } from "@/lib/backend/apiV1/schema";
 export default function ClientPage({
   data,
 }: {
-  data: components["schemas"]["MovieResponseWithDetail"];
+  data: components["schemas"]["SeriesDetailResponse"];
 }) {
   const router = useRouter();
 
@@ -35,24 +35,28 @@ export default function ClientPage({
                   "정보 없음"}
               </li>
               <li>
-                <span className="font-semibold">개봉일:</span>{" "}
-                {data.releaseDate || "미정"}
+                <span className="font-semibold">첫 방영일:</span>{" "}
+                {data.releaseStartDate || "미정"}
               </li>
               <li>
-                <span className="font-semibold">영화 상태:</span>{" "}
+                <span className="font-semibold">마지막 방영일:</span>{" "}
+                {data.releaseEndDate || "미정"}
+              </li>
+              <li>
+                <span className="font-semibold">에피소드 수:</span>{" "}
+                {data.episode || "미정"}
+              </li>
+              <li>
+                <span className="font-semibold">시리즈 상태:</span>{" "}
                 {data.status || "미정"}
               </li>
               <li>
-                <span className="font-semibold">상영 시간:</span>{" "}
-                {data.runtime ? `${data.runtime} 분` : "미정"}
-              </li>
-              <li>
                 <span className="font-semibold">제작사:</span>{" "}
-                {data.productionCompany?.trim() || "미정"}
+                {data.company?.trim() || "미정"}
               </li>
               <li>
                 <span className="font-semibold">제작 국가:</span>{" "}
-                {data.productionCountry?.trim() || "미정"}
+                {data.nation?.trim() || "미정"}
               </li>
             </ul>
           </div>
@@ -60,7 +64,7 @@ export default function ClientPage({
           {/* 영화 개요 */}
           <h2 className="text-2xl font-bold mb-4">줄거리</h2>
           <p className="text-gray-700">
-            {data.overview?.trim() || "줄거리 정보가 없습니다."}
+            {data.plot?.trim() || "줄거리 정보가 없습니다."}
           </p>
         </div>
       </div>
@@ -71,7 +75,7 @@ export default function ClientPage({
         <div className="flex">
           <Card className="w-40 flex flex-col items-center p-4 shadow-md">
             <img
-              src={data.director?.profilePath || "/no-image.png"}
+              src={data.director?.profilePath || "/no-image.png"} // 프로필 이미지 (임시)
               alt={data.director?.name}
               className="w-30 h-30 object-cover border-2 mb-3 shadow-sm rounded-lg"
             />

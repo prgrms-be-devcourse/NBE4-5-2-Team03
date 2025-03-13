@@ -89,10 +89,13 @@ class UserAccountControllerTest {
                                 .contentType("application/json")
                                 .characterEncoding("UTF-8"))
                 .andExpect(status().isOk())
+                // TODO: 매번 쿠키 설정을 assert하는 대신 전용 테스트 케이스로 분리. 관련 메소드가 private이기 때문에 UserAccountController.logoutUser 메소드를 사용하면 될 듯.
                 .andExpect(cookie().value("accessToken", "fakeAccessToken"))
                 .andExpect(cookie().httpOnly("accessToken", true))
+                .andExpect(cookie().maxAge("accessToken", 25920000))
                 .andExpect(cookie().value("refreshToken", "fakeRefreshToken"))
                 .andExpect(cookie().httpOnly("refreshToken", true))
+                .andExpect(cookie().maxAge("refreshToken", 25920000))
                 .andExpect(jsonPath("$.message").value("토큰이 성공적으로 발행되었습니다."));
 
         then(userAccountJwtAuthenticationService).should()
@@ -110,8 +113,10 @@ class UserAccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(cookie().value("accessToken", ""))
                 .andExpect(cookie().httpOnly("accessToken", true))
+                .andExpect(cookie().maxAge("accessToken", 25920000))
                 .andExpect(cookie().value("refreshToken", ""))
                 .andExpect(cookie().httpOnly("refreshToken", true))
+                .andExpect(cookie().maxAge("refreshToken", 25920000))
                 .andExpect(jsonPath("$.message").value("쿠키가 성공적으로 비워졌습니다."));
     }
 
@@ -128,8 +133,10 @@ class UserAccountControllerTest {
                 .andExpect(status().isOk())
                 .andExpect(cookie().value("accessToken", "fakeAccessToken"))
                 .andExpect(cookie().httpOnly("accessToken", true))
+                .andExpect(cookie().maxAge("accessToken", 25920000))
                 .andExpect(cookie().value("refreshToken", "fakeRefreshToken"))
                 .andExpect(cookie().httpOnly("refreshToken", true))
+                .andExpect(cookie().maxAge("refreshToken", 25920000))
                 .andExpect(jsonPath("$.message").value("토큰이 성공적으로 재발행되었습니다."));
 
         then(userAccountJwtAuthenticationService).should()

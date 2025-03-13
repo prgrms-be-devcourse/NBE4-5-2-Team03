@@ -6,6 +6,9 @@ spring:
     ansi:
       enabled: always
 
+  profiles:
+    active: prod
+
   config:
     import: "optional:file:.env[.properties]"
 

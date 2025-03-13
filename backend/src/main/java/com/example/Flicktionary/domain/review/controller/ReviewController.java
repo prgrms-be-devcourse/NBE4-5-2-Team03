@@ -8,10 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @RestController
 @RequestMapping("/api/reviews")
@@ -34,6 +32,54 @@ public class ReviewController {
         List<ReviewDto> reviews = reviewService.findAllReviews();
         return ResponseEntity.ok(ResponseDto.ok(reviews));
     }
+
+    // 특정 영화의 평균 평점 조회
+//    @GetMapping("/movies/{movie_id}/average-rating")
+//    public ResponseEntity<Double> getMovieAverageRating(
+//            @PathVariable("movie_id") Long movieId) {
+//
+//        Double averageRating = reviewService.getMovieAverageRating(movieId);
+//
+//        if (averageRating == null) {
+//            // 평균 평점이 null인 경우 0.0 반환
+//            return new ResponseEntity<>(0.0, HttpStatus.OK);
+//        }
+//
+//        return new ResponseEntity<>(averageRating, HttpStatus.OK);
+//    }
+
+    // 특정 드라마의 평균 평점 조회
+//    @GetMapping("/series/{series_id}/average-rating")
+//    public ResponseEntity<Double> getSeriesAverageRating(
+//            @PathVariable("series_id") Long seriesId) {
+//
+//        Double averageRating = reviewService.getSeriesAverageRating(seriesId);
+//
+//        if (averageRating == null) {
+//            // 평균 평점이 null인 경우 0.0 반환
+//            return new ResponseEntity<>(0.0, HttpStatus.OK);
+//        }
+//
+//        return new ResponseEntity<>(averageRating, HttpStatus.OK);
+//    }
+
+    // 특정 영화의 총 리뷰 개수 조회
+//    @GetMapping("/movies/{movie_id}/count")
+//    public ResponseEntity<Long> getMovieReviewCount(
+//            @PathVariable("movie_id") Long movieId) {
+//
+//        long totalReviews = reviewService.getMovieTotalCount(movieId);
+//        return new ResponseEntity<>(totalReviews, HttpStatus.OK);
+//    }
+
+    // 특정 영화의 총 리뷰 개수 조회
+//    @GetMapping("/series/{series_id}/count")
+//    public ResponseEntity<Long> getSeriesReviewCount(
+//            @PathVariable("series_id") Long seriesId) {
+//
+//        long totalReviews = reviewService.getSeriesTotalCount(seriesId);
+//        return new ResponseEntity<>(totalReviews, HttpStatus.OK);
+//    }
 
     // 리뷰 닉네임과 내용으로 검색
     @GetMapping("/search")
@@ -64,32 +110,17 @@ public class ReviewController {
     }
 
     // TODO: 예외 처리를 서비스 레이어로 옮기는 것을 검토
+    // TODO: Spring에서 제공하는 예외를 바로 던질지, 내부에서 따로 예외를 처리할지 여부를 검토
     // 특정 영화의 리뷰를 페이지로 조회 (0 ~ 5 페이지)
-    @GetMapping("/movie/{movie_id}")
+    @GetMapping("/movies/{movie_id}")
     public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> reviewMovieDtoPage(
             @PathVariable Long movie_id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        
-        try {
 
-            // 특정 영화 리뷰 페이지를 조회해 변수에 담아 클라이언트에 반환
-            PageDto<ReviewDto> reviews = reviewService.reviewMovieDtoPage(movie_id, page, size);
-            return ResponseEntity.ok(ResponseDto.ok(reviews));
-        } catch (NoSuchElementException e) {
-            // TODO: Spring에서 제공하는 예외를 바로 던질지, 내부에서 따로 예외를 처리할지 여부를 검토
-            // 영화를 찾을 수 없을 경우 404 상태 반환
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "영화를 찾을 수 없습니다.");
-        } catch (IllegalArgumentException e) {
-
-            // 잘못된 파라미터가 전달된 경우 400 상태 반환
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 파라미터입니다.");
-        } catch (Exception e) {
-
-            // 그 이외의 예외 발생 시 500 상태 반환 및 로그 기록
-            System.out.println("영화 리뷰 조회 중 오류가 발생했습니다: " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "영화 리뷰 조회 중 오류가 발생했습니다.");
-        }
+        // 특정 영화 리뷰 페이지를 조회해 변수에 담아 클라이언트에 반환
+        PageDto<ReviewDto> reviews = reviewService.reviewMovieDtoPage(movie_id, page, size);
+        return ResponseEntity.ok(ResponseDto.ok(reviews));
     }
 
     // 특정 드라마의 리뷰를 페이지로 조회 (0 ~ 5 페이지)
@@ -98,25 +129,9 @@ public class ReviewController {
             @PathVariable Long series_id,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "5") int size) {
-        
-        try {
 
-            // 특정 드라마 리뷰 페이지를 조회해 변수에 담아 클라이언트에 반환
-            PageDto<ReviewDto> reviews = reviewService.reviewSeriesDtoPage(series_id, page, size);
-            return ResponseEntity.ok(ResponseDto.ok(reviews));
-        } catch (NoSuchElementException e) {
-
-            // 드라마를 찾을 수 없을 경우 404 상태 반환
-            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "드라마를 찾을 수 없습니다.");
-        } catch (IllegalArgumentException e) {
-
-            // 잘못된 파라미터가 전달된 경우 400 상태 반환
-            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "잘못된 파라미터입니다.");
-        } catch (Exception e) {
-
-            // 그 이외의 예외 발생 시 500 상태 반환 및 로그 기록
-            System.out.println("드라마 리뷰 조회 중 오류가 발생했습니다: " + e.getMessage());
-            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "드라마 리뷰 조회 중 오류가 발생했습니다.");
-        }
+        // 특정 드라마 리뷰 페이지를 조회해 변수에 담아 클라이언트에 반환
+        PageDto<ReviewDto> reviews = reviewService.reviewSeriesDtoPage(series_id, page, size);
+        return ResponseEntity.ok(ResponseDto.ok(reviews));
     }
 }

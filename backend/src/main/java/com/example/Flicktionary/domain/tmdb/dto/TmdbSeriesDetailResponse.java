@@ -72,6 +72,7 @@ public class TmdbSeriesDetailResponse {
                 .imageUrl(baseImageUrl +"/w342" + body.getPosterPath())
                 .releaseStartDate(parseDate(body.getFirstAirDate()))
                 .releaseEndDate(parseDate(body.getLastAirDate()))
+                .fetchDate(LocalDate.now())
                 .nation(getFirstOrDefault(body.getOriginCountry(), "Unknown"))
                 .company(getFirstCompanyOrDefault(body.getProductionCompanies(), "Unknown"))
                 .genres(genres)

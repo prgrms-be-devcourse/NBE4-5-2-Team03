@@ -104,7 +104,9 @@ public class FavoriteService {
 
     @Transactional
     public void deleteFavorite(Long id) {
-        favoriteRepository.deleteById(id);
-    }
+        Favorite favorite = favoriteRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Favorite not found"));
 
+        favoriteRepository.delete(favorite);
+    }
 }

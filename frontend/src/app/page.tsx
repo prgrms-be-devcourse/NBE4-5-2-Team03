@@ -41,7 +41,7 @@ export default function MainPage() {
             },
           },
         });
-        setMovies(movieResponse.data);
+        setMovies(movieResponse.data?.data);
         const seriesResponse = await client.GET("/api/series", {
           params: {
             query: {
@@ -49,7 +49,7 @@ export default function MainPage() {
             },
           },
         });
-        setSeries(seriesResponse.data);
+        setSeries(seriesResponse.data?.data);
       } catch (error) {
         console.error("데이터를 불러오는 중 오류 발생:", error);
       } finally {

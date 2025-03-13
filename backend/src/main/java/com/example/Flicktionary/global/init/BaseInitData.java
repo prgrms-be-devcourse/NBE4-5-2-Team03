@@ -22,6 +22,10 @@ public class BaseInitData {
             }
 
             movieService.fetchAndSaveMovies(50);
+            // 영화 데이터 초기 저장하면서 세부 정보 초기화
+            // 필요 시 주석 해제하고 사용하세요
+            // 초기 로드 시 10분 걸림!!!
+//            movieService.fetchMovieDetail();
         };
     }
 

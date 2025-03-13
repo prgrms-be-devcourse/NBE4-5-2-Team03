@@ -52,7 +52,7 @@ export default function ClientPage({
   // 검색 실행 함수
   const handleSearch = () => {
     router.push(
-      `/series?keyword=${searchKeyword}&page=1&pageSize=${pageSize}&sortBy=${sortBy}`
+      `/series?keyword=${searchKeyword}&page=1&pageSize=${pageSize}&sortBy=${sortBy}`,
     );
   };
 
@@ -64,22 +64,22 @@ export default function ClientPage({
   };
 
   // 정렬 옵션 변경 시 즉시 반영
-const handleSortChange = (value: string) => {
+  const handleSortChange = (value: string) => {
     router.push(
-      `/series?keyword=${keyword}&page=${page}&pageSize=${pageSize}&sortBy=${value}`
+      `/series?keyword=${keyword}&page=${page}&pageSize=${pageSize}&sortBy=${value}`,
     );
   };
-  
+
   // 페이지 크기 변경 시 첫 페이지로 이동하며 즉시 반영
   const handlePageSizeChange = (value: string) => {
     router.push(
-      `/series?keyword=${keyword}&page=1&pageSize=${value}&sortBy=${sortBy}`
+      `/series?keyword=${keyword}&page=1&pageSize=${value}&sortBy=${sortBy}`,
     );
   };
 
   return (
     <div className="max-w-6xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-center">🎬 시리즈 목록</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">📺 시리즈 목록</h1>
 
       {/* 검색 바 + 정렬 옵션 + 페이지 크기 선택 */}
       <div className="flex flex-col md:flex-row gap-4 justify-between items-center mb-6">
@@ -144,10 +144,7 @@ const handleSortChange = (value: string) => {
                 />
               </CardHeader>
               <CardContent className="p-3 bg-white">
-                <h2
-                  className="text-lg font-semibold truncate"
-                  title={s.title}
-                >
+                <h2 className="text-lg font-semibold truncate" title={s.title}>
                   {s.title}
                 </h2>
                 <div className="flex items-center gap-2 mt-2">
@@ -178,7 +175,7 @@ const handleSortChange = (value: string) => {
 
         {Array.from(
           { length: endPage - startPage + 1 },
-          (_, i) => startPage + i
+          (_, i) => startPage + i,
         ).map((pageNo) => (
           <Link
             key={pageNo}

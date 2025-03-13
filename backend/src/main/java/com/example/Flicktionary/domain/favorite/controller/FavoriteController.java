@@ -10,7 +10,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/favorite")
+@RequestMapping("/api/favorites")
 @RequiredArgsConstructor
 public class FavoriteController {
     private final FavoriteService favoriteService;
@@ -53,7 +53,11 @@ public class FavoriteController {
     // 즐겨찾기 삭제
     @DeleteMapping("/{id}")
     public ResponseEntity<ResponseDto<?>> deleteFavorite(@PathVariable Long id) {
-        favoriteService.deleteFavorite(id);
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseDto.of(HttpStatus.NO_CONTENT.value() + "", HttpStatus.NO_CONTENT.getReasonPhrase()));
+        try {
+            favoriteService.deleteFavorite(id);
+            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseDto.of(HttpStatus.NO_CONTENT.value() + "", HttpStatus.NO_CONTENT.getReasonPhrase(), null));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.of(HttpStatus.BAD_REQUEST.value() + "", HttpStatus.BAD_REQUEST.getReasonPhrase(), null));
+        }
     }
 }

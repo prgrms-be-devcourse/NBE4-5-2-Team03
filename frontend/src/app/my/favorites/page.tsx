@@ -16,7 +16,7 @@ export default async function Page({
   const { userId = "1", page = 1, pageSize = 10, sortBy = "id" } = params;
 
   try {
-    const response = await client.GET("/api/favorite/{userId}", {
+    const response = await client.GET("/api/favorites/{userId}", {
       params: {
         path: { userId },
         query: {
@@ -35,7 +35,7 @@ export default async function Page({
 
     return (
       <ClientPage
-        data={response.data}
+        data={response.data.data}
         userId={userId}
         pageSize={pageSize}
         page={page}

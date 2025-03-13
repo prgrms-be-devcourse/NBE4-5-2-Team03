@@ -10,7 +10,7 @@ export default async function Page({
 }) {
   const { id } = await params;
 
-  const response = await client.GET("/api/movies/{id}", {
+  const response = await client.GET("/api/series/{id}", {
     params: {
       path: {
         id,

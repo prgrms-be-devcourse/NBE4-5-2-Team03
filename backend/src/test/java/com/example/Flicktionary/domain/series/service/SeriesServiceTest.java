@@ -171,9 +171,10 @@ public class SeriesServiceTest {
                 .hasMessage("잘못된 정렬 방식입니다.");
     }
 
+    // TODO: 서비스 메소드 시그니처 변경에 따라 테스트 수정
     @Test
     @DisplayName("Series 상세 정보 조회 성공 테스트")
-    void testGetSeriesDetail_Success() {
+    void testGetSeriesDetail_Success() throws InterruptedException {
         // given
         Long seriesId = 123L;
         given(seriesRepository.findById(seriesId))
