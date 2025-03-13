@@ -3,6 +3,7 @@ package com.example.Flicktionary.domain.actor.controller;
 import com.example.Flicktionary.domain.actor.entity.Actor;
 import com.example.Flicktionary.domain.actor.service.ActorService;
 import com.example.Flicktionary.domain.movie.entity.Movie;
+import com.example.Flicktionary.domain.series.entity.Series;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,15 +30,18 @@ public class ActorController {
 
         Actor actor = actorOpt.get();
         List<Movie> movies = actorService.getMoviesByActorId(actorId);
+        List<Series> series = actorService.getSeriesByActorId(actorId);
 
-        return ResponseEntity.ok(new ActorResponse(actor, movies));
+        return ResponseEntity.ok(new ActorResponse(actor, movies, series));
     }
 
     // DTO 클래스 (내부 클래스로 정의 가능)
-    private record ActorResponse(Long id, String name, String profilePath, List<MovieDTO> movies) {
-        public ActorResponse(Actor actor, List<Movie> movies) {
+    private record ActorResponse(Long id, String name, String profilePath, List<MovieDTO> movies,
+                                 List<SeriesDTO> series) {
+        public ActorResponse(Actor actor, List<Movie> movies, List<Series> series) {
             this(actor.getId(), actor.getName(), actor.getProfilePath(),
-                    movies.stream().map(MovieDTO::new).toList());
+                    movies.stream().map(MovieDTO::new).toList(),
+                    series.stream().map(SeriesDTO::new).toList());
         }
     }
 
@@ -45,6 +49,14 @@ public class ActorController {
         public MovieDTO(Movie movie) {
             this(movie.getId(), movie.getTitle(), movie.getPosterPath(),
                     movie.getReleaseDate() != null ? movie.getReleaseDate().toString() : null);
+        }
+    }
+
+    private record SeriesDTO(Long id, String title, String posterPath, String releaseStartDate, String releaseEndDate) {
+        public SeriesDTO(Series series) {
+            this(series.getId(), series.getTitle(), series.getImageUrl(),
+                    series.getReleaseStartDate() != null ? series.getReleaseStartDate().toString() : null,
+                    series.getReleaseEndDate() != null ? series.getReleaseEndDate().toString() : null);
         }
     }
 }

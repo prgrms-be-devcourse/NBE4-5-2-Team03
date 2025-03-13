@@ -1,5 +1,6 @@
 "use client";
 
+import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { components } from "@/lib/backend/apiV1/schema";
 
@@ -8,6 +9,8 @@ export default function ClientPage({
 }: {
   data: components["schemas"]["SeriesDetailResponse"];
 }) {
+  const router = useRouter();
+
   return (
     <div className="max-w-6xl mx-auto px-4 py-10 space-y-10">
       {/* 상단: 포스터 + 영화 정보 */}
@@ -90,7 +93,8 @@ export default function ClientPage({
           {data.casts?.map((cast) => (
             <Card
               key={cast.actor.id}
-              className="flex flex-col items-center p-4 shadow-md w-40"
+              className="flex flex-col items-center p-4 shadow-md w-40 cursor-pointer hover:bg-gray-100 transition"
+              onClick={() => router.push(`/actors/${cast.actor.id}`)}
             >
               <img
                 src={cast.actor.profilePath || "/no-image.png"}

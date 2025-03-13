@@ -8,7 +8,9 @@ import com.example.Flicktionary.global.dto.PageDto;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -25,12 +27,13 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-//이건 전체 빈 로드
-//@SpringBootTest
-//@AutoConfigureMockMvc
 
 //컨트롤러만 단위테스트 하기위해 SeriesController빈만 로드
-@WebMvcTest(controllers = SeriesController.class)
+//@WebMvcTest(controllers = SeriesController.class)
+
+//빈 전체 로드
+@SpringBootTest
+@AutoConfigureMockMvc
 public class SeriesControllerTest {
 
     @Autowired
@@ -71,14 +74,13 @@ public class SeriesControllerTest {
         );
         Page<Series> mockSeriesPage = new PageImpl<>(mockSeriesList, PageRequest.of(page - 1, pageSize), mockSeriesList.size());
         PageDto<SeriesSummaryResponse> result = new PageDto<>(mockSeriesPage.map(SeriesSummaryResponse::new));
-
         // mockSeriesPage를 seriesService.getSeries()에서 반환하도록 설정(when)
         when(seriesService.getSeries(keyword, page, pageSize, sortBy)).thenReturn(mockSeriesPage);
         ResultActions resultActions = mvc.perform(get("/api/series")
                         .param("keyword", keyword)
                         .param("page", String.valueOf(page))
-                        .param("page-size", String.valueOf(pageSize))
-                        .param("sort-by", sortBy)
+                        .param("pageSize", String.valueOf(pageSize))
+                        .param("sortBy", sortBy)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
 

@@ -42,6 +42,8 @@ public class Series {
 
     private LocalDate releaseEndDate;
 
+    private LocalDate fetchDate;
+
     private String nation;
 
     private String company;

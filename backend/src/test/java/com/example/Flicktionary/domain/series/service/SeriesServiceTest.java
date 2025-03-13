@@ -65,7 +65,7 @@ public class SeriesServiceTest {
         String keyword = "";
         int page = 1;
         int pageSize = 10;
-        String sortBy = "rating-count";
+        String sortBy = "ratingCount";
 
         Page<Series> series = seriesService.getSeries(keyword, page, pageSize, sortBy);
         PageDto<SeriesSummaryResponse> result = new PageDto<>(series.map(SeriesSummaryResponse::new));
@@ -112,7 +112,7 @@ public class SeriesServiceTest {
 
     @Test
     @DisplayName("Series 상세 정보 조회 성공 테스트")
-    void testGetSeriesDetail_Success() {
+    void testGetSeriesDetail_Success() throws InterruptedException {
         // given
         Long seriesId = 1L;
 

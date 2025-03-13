@@ -64,6 +64,37 @@ export default function ActorDetailPage({ actor }: { actor: Actor }) {
         </div>
       </div>
 
+      {/* 출연한 시리즈 리스트 */}
+      <div className="mt-8">
+        <h2 className="text-xl font-semibold mb-4">📺 출연한 시리즈</h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          {actor.series.length > 0 ? (
+            actor.series.map((series) => (
+              <div
+                key={series.id}
+                className="bg-white shadow-md p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition"
+                onClick={() => router.push(`/series/${series.id}`)}
+              >
+                <img
+                  src={series.posterPath || "/default-series.png"}
+                  alt={series.title}
+                  width={200}
+                  height={300}
+                  className="rounded-md"
+                />
+                <h3 className="text-lg font-medium mt-2">{series.title}</h3>
+                <p className="text-gray-500">
+                  {series.releaseStartDate} ~{" "}
+                  {series.releaseEndDate || "방영 중"}
+                </p>
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500">출연한 시리즈가 없습니다.</p>
+          )}
+        </div>
+      </div>
+
       {/* 돌아가기 버튼 */}
       <div className="flex justify-center mt-8">
         <Button variant="outline" onClick={() => router.back()}>

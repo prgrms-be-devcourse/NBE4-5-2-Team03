@@ -18,8 +18,8 @@ export default async function Page({
     },
   });
 
-  if (response.error) {
-    return <div>{response}</div>;
+  if (response.data?.data == null) {
+    return <div>{response.data?.message}</div>;
   }
 
   const data = response.data.data;

@@ -12,6 +12,8 @@ public class SeriesSummaryResponse {
 
     private Long id;
 
+    private Long tmdbId;
+
     private String title;
 
     private String posterPath;
@@ -22,6 +24,7 @@ public class SeriesSummaryResponse {
 
     public SeriesSummaryResponse(Series series) {
         this.id = series.getId();
+        this.tmdbId = series.getTmdbId();
         this.title = series.getTitle();
         this.posterPath = series.getImageUrl();
         this.averageRating = series.getAverageRating();

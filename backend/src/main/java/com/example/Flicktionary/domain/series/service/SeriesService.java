@@ -29,7 +29,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -112,6 +114,13 @@ public class SeriesService {
                 throw new RuntimeException("TMDB API 응답이 null입니다.");
             }
 
+            //DB에 이미 존재한다면
+            Optional<Series> currentSeries = seriesRepository.findByTmdbId(response.getBody().getTmdbId());
+            if (currentSeries.isPresent()) {
+                updateSeries(currentSeries.get(), response);
+                return;
+            }
+
             //Genre 엔티티 생성
             List<Genre> genres = response.getBody().getGenres().stream()
                     .map(genreDto ->
@@ -141,7 +150,7 @@ public class SeriesService {
                     .orElse(null); // 감독이 없으면 null 반환
 
             seriesRepository.findByTmdbId(response.getBody().getTmdbId()).ifPresentOrElse(
-                    series -> updateSeries(series, response),
+                    series -> {},
                     () -> {
                         Series series = TmdbSeriesDetailResponse.toEntity(response, genres, director, baseImageUrl);
                         // SeriesCast 엔티티 생성 및 Actor 생성
@@ -189,6 +198,7 @@ public class SeriesService {
         if (body.getLastAirDate() != null) {
             series.setReleaseEndDate(LocalDate.parse(body.getLastAirDate()));
         }
+        series.setFetchDate(LocalDate.now());
     }
 
     //Series 목록 조회(페이징, 정렬)
@@ -214,9 +224,14 @@ public class SeriesService {
     }
 
     //Series 상세 조회
-    public SeriesDetailResponse getSeriesDetail(Long id) {
+    public SeriesDetailResponse getSeriesDetail(Long id) throws InterruptedException {
         Series series = seriesRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("id에 해당하는 Series가 존재하지 않습니다."));
+
+        //등록 or 수정된지 7일이 지났다면 업데이트
+        if(ChronoUnit.DAYS.between(series.getFetchDate(), LocalDate.now()) >= 7){
+            fetchAndSaveSeriesDetails(series.getTmdbId());
+        }
 
         return new SeriesDetailResponse(series);
     }
