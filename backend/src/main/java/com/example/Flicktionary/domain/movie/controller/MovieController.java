@@ -23,7 +23,7 @@ public class MovieController {
 
     @Operation(summary = "영화 목록 조회", description = "영화 목록을 조회합니다. (페이징, 검색, 정렬 지원)")
     @GetMapping
-    public ResponseEntity<ResponseDto<PageDto<MovieResponse>>> getMovies(
+    public ResponseEntity<ResponseDto<?>> getMovies(
             @RequestParam(defaultValue = "") String keyword,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize,
@@ -32,18 +32,18 @@ public class MovieController {
             PageDto<MovieResponse> response = movieService.getMovies(keyword, page, pageSize, sortBy);
             return ResponseEntity.ok(ResponseDto.ok(response));
         } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.of(HttpStatus.BAD_REQUEST.value() + "", HttpStatus.BAD_REQUEST.getReasonPhrase(), null));
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.of(HttpStatus.BAD_REQUEST.value() + "", e.getMessage()));
         }
     }
 
     @Operation(summary = "영화 상세 조회", description = "영화 상세 정보를 조회합니다.")
     @GetMapping("/{id}")
-    public ResponseEntity<ResponseDto<MovieResponseWithDetail>> getMovie(@PathVariable long id) {
+    public ResponseEntity<ResponseDto<?>> getMovie(@PathVariable long id) {
         try {
             MovieResponseWithDetail response = movieService.getMovie(id);
             return ResponseEntity.ok(ResponseDto.ok(response));
         } catch (NoSuchElementException e) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDto.of(HttpStatus.NOT_FOUND.value() + "", HttpStatus.NOT_FOUND.getReasonPhrase(), null));
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(ResponseDto.of(HttpStatus.NOT_FOUND.value() + "", e.getMessage()));
         }
     }
 }

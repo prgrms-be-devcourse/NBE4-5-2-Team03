@@ -4,13 +4,16 @@ import com.example.Flicktionary.domain.series.dto.SeriesDetailResponse;
 import com.example.Flicktionary.domain.series.dto.SeriesSummaryResponse;
 import com.example.Flicktionary.domain.series.entity.Series;
 import com.example.Flicktionary.domain.series.service.SeriesService;
+import com.example.Flicktionary.domain.user.service.UserAccountJwtAuthenticationService;
+import com.example.Flicktionary.domain.user.service.UserAccountService;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.security.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
@@ -28,12 +31,13 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-//컨트롤러만 단위테스트 하기위해 SeriesController빈만 로드
-//@WebMvcTest(controllers = SeriesController.class)
-
-//빈 전체 로드
-@SpringBootTest
-@AutoConfigureMockMvc
+@DisplayName("시리즈 도메인 컨트롤러 테스트")
+@Import({SeriesService.class,
+        UserAccountService.class,
+        UserAccountJwtAuthenticationService.class,
+        CustomUserDetailsService.class})
+@WebMvcTest(SeriesController.class)
+@AutoConfigureMockMvc(addFilters = false)
 public class SeriesControllerTest {
 
     @Autowired
@@ -41,6 +45,12 @@ public class SeriesControllerTest {
 
     @MockitoBean
     private SeriesService seriesService;
+
+    @MockitoBean
+    private UserAccountService userAccountService;
+
+    @MockitoBean
+    private UserAccountJwtAuthenticationService userAccountJwtAuthenticationService;
 
     @Test
     @DisplayName("Series 목록 조회")
@@ -74,6 +84,7 @@ public class SeriesControllerTest {
         );
         Page<Series> mockSeriesPage = new PageImpl<>(mockSeriesList, PageRequest.of(page - 1, pageSize), mockSeriesList.size());
         PageDto<SeriesSummaryResponse> result = new PageDto<>(mockSeriesPage.map(SeriesSummaryResponse::new));
+
         // mockSeriesPage를 seriesService.getSeries()에서 반환하도록 설정(when)
         when(seriesService.getSeries(keyword, page, pageSize, sortBy)).thenReturn(mockSeriesPage);
         ResultActions resultActions = mvc.perform(get("/api/series")

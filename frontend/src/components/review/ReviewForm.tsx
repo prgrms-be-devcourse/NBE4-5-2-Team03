@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
@@ -23,14 +23,24 @@ export default function ReviewForm({
   const [hoverRating, setHoverRating] = useState<number | null>(null);
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userAccountId, setUserAccountId] = useState<number | null>(null);
+
+  useEffect(() => {
+    // localStorage에서 토큰과 userId를 가져와 로그인 상태 및 사용자 ID 설정
+    const token = localStorage.getItem("token");
+    const userId = localStorage.getItem("userId");
+    setIsLoggedIn(!!token);
+    setUserAccountId(userId ? Number(userId) : null);
+  }, []);
 
   const handleSubmit = async () => {
     if (!content.trim()) return alert("리뷰를 입력해주세요.");
     if (rating === null) return alert("평점을 선택해주세요.");
+    if (!isLoggedIn || userAccountId === null)
+      return alert("로그인이 필요합니다.");
 
     setLoading(true);
-
-    /* 나중에 로그인 구현되면, 이 곳에 userAccountId를 받아 로그인 하는 기능 구현할 것 */
 
     let movieId = null;
     let seriesId = null;
@@ -43,7 +53,7 @@ export default function ReviewForm({
     }
 
     const reviewData = {
-      userAccountId: 1, // 임시로 1로 설정
+      userAccountId: userAccountId,
       movieId: movieId,
       seriesId: seriesId,
       contentType: contentType,
@@ -56,13 +66,17 @@ export default function ReviewForm({
 
     try {
       const apiUrl = "http://localhost:8080/api/reviews";
+      const token = localStorage.getItem("token"); // localStorage에서 토큰 가져오기
 
       // 요청 URL 로그
       console.log("리뷰 작성 요청 URL:", apiUrl);
 
       const response = await fetch(apiUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`, // Authorization 헤더에 토큰 추가
+        },
         body: JSON.stringify(reviewData),
       });
 
@@ -70,13 +84,10 @@ export default function ReviewForm({
       console.log("서버 응답 상태:", response.status);
 
       if (!response.ok) {
-        alert("리뷰 작성에 실패했습니다.");
-        setLoading(false);
-
-        // 로그
         const errorData = await response.json();
         console.error("리뷰 작성 실패:", errorData);
         alert(`리뷰 작성 실패: ${errorData.message || response.statusText}`);
+        setLoading(false);
         return;
       }
 
@@ -108,6 +119,16 @@ export default function ReviewForm({
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
+
+  // 로그인되지 않은 경우 로그인 안내 메시지 표시
+  if (!isLoggedIn) {
+    return (
+      <div className="mb-6">
+        <p>리뷰를 작성하려면 로그인이 필요합니다.</p>
+        <Button onClick={() => router.push("/login")}>로그인</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-6">
