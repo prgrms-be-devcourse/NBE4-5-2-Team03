@@ -38,6 +38,13 @@ public class ReviewService {
         UserAccount userAccount = userAccountRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException("리뷰 생성 권한이 없습니다."));
 
+        // 중복 리뷰 검사
+        if (reviewRepository.existsByUserAccount_IdAndMovie_IdAndSeries_Id(
+                userId, reviewDto.getMovieId(), reviewDto.getSeriesId()
+        )) {
+            throw new RuntimeException("이미 리뷰를 작성하셨습니다.");
+        }
+
         // 리뷰 내용이 null이거나 비어있을 경우
         if (reviewDto.getContent() == null || reviewDto.getContent().isBlank()) {
             throw new IllegalArgumentException("리뷰 내용을 입력해주세요.");

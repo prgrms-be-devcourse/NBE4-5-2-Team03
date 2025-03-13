@@ -89,15 +89,12 @@ export default function ReviewForm({
           const errorData = await response.json();
           errorMessage = errorData.message || errorMessage;
         } catch (e) {
-          console.error("에러 응답 파싱 실패함: ", e);
+          console.error("에러 응답 파싱 실패함:", e);
         }
 
         // 로그
         alert(errorMessage);
         setLoading(false);
-        const errorData = await response.json();
-        console.error("리뷰 작성 실패:", errorData);
-        alert(`리뷰 작성 실패: ${errorData.message || response.statusText}`);
         return;
       }
 

@@ -19,6 +19,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 닉네임 또는 리뷰 내용으로 검색하는 기능
     Page<Review> findByUserAccount_NicknameContainingOrContentContaining(String nickname, String content, Pageable pageable);
 
+    // 중복 리뷰를 검사함
+    boolean existsByUserAccount_IdAndMovie_IdAndSeries_Id(Long userAccountId, Long movieId, Long seriesId);
+
     // 특정 영화의 평균 평점을 계산하는 기능
 //    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.movie.id = :movieId")
 //    Double findAverageRatingByMovie_Id(Long movieId);
