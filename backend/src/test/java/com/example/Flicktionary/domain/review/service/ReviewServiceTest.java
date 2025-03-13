@@ -18,8 +18,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -31,13 +29,11 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.BDDAssertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.doNothing;
 
-// TODO: 추가된 테스트 리팩토링
 @DisplayName("리뷰 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
 public class ReviewServiceTest {
@@ -78,6 +74,7 @@ public class ReviewServiceTest {
             .productionCompany("테스트용 제작사")
             .status("상영 중")
             .averageRating(4)
+            .ratingCount(10)
             .build();
 
     private Series testSeries = Series.builder()
@@ -111,6 +108,14 @@ public class ReviewServiceTest {
             .rating(5)
             .content("테스트용 리뷰 내용 (드라마)")
             .build();
+
+    @BeforeEach
+    void initValues() {
+        testMovie.setAverageRating(4);
+        testMovie.setRatingCount(10);
+        testSeries.setAverageRating(4.5);
+        testSeries.setRatingCount(10);
+    }
 
     @Test
     @DisplayName("리뷰 작성")
@@ -191,23 +196,27 @@ public class ReviewServiceTest {
                 .hasMessage("평점을 매겨주세요.");
     }
 
-    /**
+
     @Test
     @DisplayName("리뷰 작성 시 영화 정보 업데이트")
     void createReviewUpdateMovie() {
         int ratingCount = testMovie.getRatingCount();
         double averageRating = testMovie.getAverageRating();
-        long id = testMovie.getId();
+        given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.of(testUser));
+        given(movieRepository.findById(any(Long.class))).willReturn(Optional.of(testMovie));
+        given(reviewRepository.save(any(Review.class))).willReturn(reviewDto1.toEntity(testUser, testMovie, null));
 
         // 리뷰 생성 및 변수에 저장
         ReviewDto review = reviewService.createReview(reviewDto1);
 
         int newRatingCount = ratingCount + 1;
         double newAverageRating = (averageRating * ratingCount + review.getRating()) / newRatingCount;
-        Movie updatedMovie = movieRepository.findById(id).get();
 
-        assertThat(updatedMovie.getRatingCount()).isEqualTo(newRatingCount);
-        assertThat(updatedMovie.getAverageRating()).isEqualTo(newAverageRating);
+        assertThat(testMovie.getRatingCount()).isEqualTo(newRatingCount);
+        assertThat(testMovie.getAverageRating()).isEqualTo(newAverageRating);
+        then(userAccountRepository).should().findById(reviewDto1.getUserAccountId());
+        then(movieRepository).should().findById(reviewDto1.getMovieId());
+        then(reviewRepository).should().save(any(Review.class));
     }
 
     @Test
@@ -215,20 +224,23 @@ public class ReviewServiceTest {
     void createReviewUpdateSeries() {
         int ratingCount = testSeries.getRatingCount();
         double averageRating = testSeries.getAverageRating();
-        long id = testSeries.getId();
+        given(userAccountRepository.findById(any(Long.class))).willReturn(Optional.of(testUser));
+        given(seriesRepository.findById(any(Long.class))).willReturn(Optional.of(testSeries));
+        given(reviewRepository.save(any(Review.class))).willReturn(reviewDto2.toEntity(testUser, null, testSeries));
 
         // 리뷰 생성 및 변수에 저장
         ReviewDto review = reviewService.createReview(reviewDto2);
 
         int newRatingCount = ratingCount + 1;
         double newAverageRating = (averageRating * ratingCount + review.getRating()) / newRatingCount;
-        Series updatedSeries = seriesRepository.findById(id).get();
 
-        assertThat(updatedSeries.getRatingCount()).isEqualTo(newRatingCount);
-        assertThat(updatedSeries.getAverageRating()).isEqualTo(newAverageRating);
+        assertThat(testSeries.getRatingCount()).isEqualTo(newRatingCount);
+        assertThat(testSeries.getAverageRating()).isEqualTo(newAverageRating);
+        then(userAccountRepository).should().findById(reviewDto2.getUserAccountId());
+        then(seriesRepository).should().findById(reviewDto2.getSeriesId());
+        then(reviewRepository).should().save(any(Review.class));
     }
 
-    */
     @Test
     @DisplayName("모든 리뷰 조회")
     void printAllReviews() {
@@ -247,12 +259,11 @@ public class ReviewServiceTest {
         assertThat(reviews).flatExtracting(ReviewDto::getSeriesId).contains(reviewDto2.getSeriesId());
         then(reviewRepository).should().findAll();
     }
-    // TODO: 변경된 쿼리 메소트에 맞춰 테스트 수정
-    /**
+
     @Test
     @DisplayName("특정 영화의 리뷰 조회")
     void printReviewByMovie() {
-        given(reviewRepository.findByMovie_Id(any(Long.class), any(Pageable.class)))
+        given(reviewRepository.findByMovie_IdOrderByIdDesc(any(Long.class), any(Pageable.class)))
                 .willReturn(new PageImpl<>(
                         List.of(reviewDto1.toEntity(testUser, testMovie, null)),
                         PageRequest.of(0, 5),
@@ -269,13 +280,13 @@ public class ReviewServiceTest {
                 .contains(reviewDto1.getMovieId());
         assertEquals(1, reviewDtoPageDto.getCurPageNo());
         assertEquals(5, reviewDtoPageDto.getPageSize());
-        then(reviewRepository).should().findByMovie_Id(any(Long.class), any(Pageable.class));
+        then(reviewRepository).should().findByMovie_IdOrderByIdDesc(any(Long.class), any(Pageable.class));
     }
 
     @Test
     @DisplayName("특정 드라마의 리뷰 조회")
     void printReviewBySeries() {
-        given(reviewRepository.findBySeries_Id(any(Long.class), any(Pageable.class)))
+        given(reviewRepository.findBySeries_IdOrderByIdDesc(any(Long.class), any(Pageable.class)))
                 .willReturn(new PageImpl<>(
                         List.of(reviewDto2.toEntity(testUser, null, testSeries)),
                         PageRequest.of(0, 5),
@@ -292,9 +303,9 @@ public class ReviewServiceTest {
                 .contains(reviewDto2.getSeriesId());
         assertEquals(1, reviewDtoPageDto.getCurPageNo());
         assertEquals(5, reviewDtoPageDto.getPageSize());
-        then(reviewRepository).should().findBySeries_Id(any(Long.class), any(Pageable.class));
+        then(reviewRepository).should().findBySeries_IdOrderByIdDesc(any(Long.class), any(Pageable.class));
     }
-    */
+
     @DisplayName("리뷰 수정")
     @Test
     // TODO: 새로운 평점/내용 검증 로직까지 테스트하는 것을 검토
@@ -321,69 +332,61 @@ public class ReviewServiceTest {
         assertEquals("(테스트)수정된 리뷰 내용", result.getContent());
         then(reviewRepository).should().findById(reviewDto1.getId());
     }
-    /**
-    @DisplayName("존재하지 않는 리뷰 수정")
+
     @Test
     @DisplayName("리뷰 수정 시 영화 정보 업데이트")
     void updateReviewUpdateMovie() {
-        // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto1);
-
+        int ratingCount = testMovie.getRatingCount();
+        double averageRating = testMovie.getAverageRating();
         // 수정할 리뷰 내용 변수에 저장
         ReviewDto updatedReviewDto = ReviewDto.builder()
-                .id(savedReview.getId())
-                .userAccountId(savedReview.getUserAccountId())
-                .nickname(savedReview.getNickname())
-                .movieId(savedReview.getMovieId())
+                .id(reviewDto1.getId())
+                .userAccountId(reviewDto1.getUserAccountId())
+                .nickname(reviewDto1.getNickname())
+                .movieId(reviewDto1.getMovieId())
                 .rating(4)
                 .content("(테스트)수정된 리뷰 내용")
                 .build();
-
-        int ratingCount = testMovie.getRatingCount();
-        double averageRating = testMovie.getAverageRating();
-        long id = testMovie.getId();
+        given(reviewRepository.findById(reviewDto1.getId()))
+                .willReturn(Optional.of(updatedReviewDto.toEntity(testUser, testMovie, null)));
 
         // 수정
-        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto);
+        ReviewDto review = reviewService.updateReview(reviewDto1.getId(), updatedReviewDto);
 
-        double newAverageRating = (averageRating * ratingCount - savedReview.getRating() + review.getRating()) / ratingCount;
-        Movie updatedMovie = movieRepository.findById(id).get();
+        double newAverageRating = (averageRating * ratingCount - updatedReviewDto.getRating() + review.getRating()) / ratingCount;
 
-        assertThat(updatedMovie.getRatingCount()).isEqualTo(ratingCount);
-        assertThat(updatedMovie.getAverageRating()).isEqualTo(newAverageRating);
+        assertThat(testMovie.getRatingCount()).isEqualTo(ratingCount);
+        assertThat(testMovie.getAverageRating()).isEqualTo(newAverageRating);
+        then(reviewRepository).should().findById(reviewDto1.getId());
     }
 
     @Test
-    @DisplayName("리뷰 작성 시 시리즈 정보 업데이트")
+    @DisplayName("리뷰 수정 시 시리즈 정보 업데이트")
     void updateReviewUpdateSeries() {
-        // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto2);
-
+        int ratingCount = testSeries.getRatingCount();
+        double averageRating = testSeries.getAverageRating();
         // 수정할 리뷰 내용 변수에 저장
         ReviewDto updatedReviewDto = ReviewDto.builder()
-                .id(savedReview.getId())
-                .userAccountId(savedReview.getUserAccountId())
-                .nickname(savedReview.getNickname())
-                .seriesId(savedReview.getSeriesId())
+                .id(reviewDto2.getId())
+                .userAccountId(reviewDto2.getUserAccountId())
+                .nickname(reviewDto2.getNickname())
+                .movieId(reviewDto2.getMovieId())
                 .rating(4)
                 .content("(테스트)수정된 리뷰 내용")
                 .build();
-
-        int ratingCount = testSeries.getRatingCount();
-        double averageRating = testSeries.getAverageRating();
-        long id = testSeries.getId();
+        given(reviewRepository.findById(reviewDto2.getId()))
+                .willReturn(Optional.of(updatedReviewDto.toEntity(testUser, null, testSeries)));
 
         // 수정
-        ReviewDto review = reviewService.updateReview(savedReview.getId(), updatedReviewDto);
+        ReviewDto review = reviewService.updateReview(reviewDto2.getId(), updatedReviewDto);
 
-        double newAverageRating = (averageRating * ratingCount - savedReview.getRating() + review.getRating()) / ratingCount;
-        Series updatedSeries = seriesRepository.findById(id).get();
+        double newAverageRating = (averageRating * ratingCount - updatedReviewDto.getRating() + review.getRating()) / ratingCount;
 
-        assertThat(updatedSeries.getRatingCount()).isEqualTo(ratingCount);
-        assertThat(updatedSeries.getAverageRating()).isEqualTo(newAverageRating);
+        assertThat(testSeries.getRatingCount()).isEqualTo(ratingCount);
+        assertThat(testSeries.getAverageRating()).isEqualTo(newAverageRating);
+        then(reviewRepository).should().findById(reviewDto2.getId());
     }
 
-    */
     @DisplayName("존재하지 않는 리뷰 수정")
     @Test
     void updateNonexistentReview() {
@@ -413,51 +416,49 @@ public class ReviewServiceTest {
         then(reviewRepository).should().findById(reviewDto1.getId());
         then(reviewRepository).should().delete(any(Review.class));
     }
-    /**
-    @DisplayName("존재하지 않는 리뷰 삭제")
-    @Test
-    @DisplayName("리뷰 수정 시 영화 정보 업데이트")
-    void deleteReviewUpdateMovie() {
-        // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto1);
 
+    @Test
+    @DisplayName("리뷰 삭제 시 영화 정보 업데이트")
+    void deleteReviewUpdateMovie() {
         int ratingCount = testMovie.getRatingCount();
         double averageRating = testMovie.getAverageRating();
-        long id = testMovie.getId();
+        given(reviewRepository.findById(reviewDto1.getId()))
+                .willReturn(Optional.of(reviewDto1.toEntity(testUser, testMovie, null)));
+        doNothing().when(reviewRepository).delete(any(Review.class));
 
         // 리뷰 삭제
-        reviewService.deleteReview(savedReview.getId());
+        reviewService.deleteReview(reviewDto1.getId());
 
         int newRatingCount = ratingCount - 1;
-        double newAverageRating = (averageRating * ratingCount - savedReview.getRating()) / newRatingCount;
-        Movie updatedMovie = movieRepository.findById(id).get();
+        double newAverageRating = (averageRating * ratingCount - reviewDto1.getRating()) / newRatingCount;
 
-        assertThat(updatedMovie.getRatingCount()).isEqualTo(newRatingCount);
-        assertThat(updatedMovie.getAverageRating()).isEqualTo(newAverageRating);
+        assertThat(testMovie.getRatingCount()).isEqualTo(newRatingCount);
+        assertThat(testMovie.getAverageRating()).isEqualTo(newAverageRating);
+        then(reviewRepository).should().findById(reviewDto1.getId());
+        then(reviewRepository).should().delete(any(Review.class));
     }
 
     @Test
     @DisplayName("리뷰 삭제 시 시리즈 정보 업데이트")
     void deleteReviewUpdateSeries() {
-        // 리뷰 생성
-        ReviewDto savedReview = reviewService.createReview(reviewDto2);
+    int ratingCount = testSeries.getRatingCount();
+    double averageRating = testSeries.getAverageRating();
+    given(reviewRepository.findById(reviewDto2.getId()))
+    .willReturn(Optional.of(reviewDto2.toEntity(testUser, null, testSeries)));
+    doNothing().when(reviewRepository).delete(any(Review.class));
 
-        int ratingCount = testSeries.getRatingCount();
-        double averageRating = testSeries.getAverageRating();
-        long id = testSeries.getId();
+    // 리뷰 삭제
+    reviewService.deleteReview(reviewDto2.getId());
 
-        // 리뷰 삭제
-        reviewService.deleteReview(savedReview.getId());
+    int newRatingCount = ratingCount - 1;
+    double newAverageRating = (averageRating * ratingCount - reviewDto2.getRating()) / newRatingCount;
 
-        int newRatingCount = ratingCount - 1;
-        double newAverageRating = (averageRating * ratingCount - savedReview.getRating()) / newRatingCount;
-        Series updatedSeries = seriesRepository.findById(id).get();
-
-        assertThat(updatedSeries.getRatingCount()).isEqualTo(newRatingCount);
-        assertThat(updatedSeries.getAverageRating()).isEqualTo(newAverageRating);
+    assertThat(testSeries.getRatingCount()).isEqualTo(newRatingCount);
+    assertThat(testSeries.getAverageRating()).isEqualTo(newAverageRating);
+    then(reviewRepository).should().findById(reviewDto2.getId());
+    then(reviewRepository).should().delete(any(Review.class));
     }
 
-    */
     @DisplayName("존재하지 않는 리뷰 삭제")
     @Test
     void deleteNonexistentReview() {
