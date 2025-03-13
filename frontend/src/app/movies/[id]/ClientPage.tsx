@@ -3,6 +3,7 @@
 import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { components } from "@/lib/backend/apiV1/schema";
+import ReviewPage from "@/components/review/ClientPage";
 
 export default function ClientPage({
   data,
@@ -107,6 +108,14 @@ export default function ClientPage({
           ))}
         </div>
       </div>
+
+      {/* 리뷰페이지 */}
+      <ReviewPage
+        contentId={data.id + ""}
+        contentType="movies"
+        averageRating={data.averageRating}
+        ratingCount={data.ratingCount}
+      />
     </div>
   );
 }
