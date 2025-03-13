@@ -30,8 +30,6 @@ export default function ReviewForm({
 
     setLoading(true);
 
-    /* 나중에 로그인 구현되면, 이 곳에 userAccountId를 받아 로그인 하는 기능 구현할 것 */
-
     let movieId = null;
     let seriesId = null;
 
@@ -42,8 +40,13 @@ export default function ReviewForm({
       seriesId = Number(contentId);
     }
 
+    // 로컬 스토리지에서 토큰 가져오기
+    const token = localStorage.getItem("token");
+    // 로컬 스토리지에서 사용자 ID 가져오기
+    const userId = localStorage.getItem("userId");
+
     const reviewData = {
-      userAccountId: 1, // 임시로 1로 설정
+      userAccountId: Number(userId),
       movieId: movieId,
       seriesId: seriesId,
       contentType: contentType,
@@ -55,14 +58,17 @@ export default function ReviewForm({
     console.log("전송할 리뷰 데이터:", reviewData);
 
     try {
-      const apiUrl = "http://localhost:8080/api/reviews";
+      const reviewApiUrl = "http://localhost:8080/api/reviews";
 
       // 요청 URL 로그
-      console.log("리뷰 작성 요청 URL:", apiUrl);
+      console.log("리뷰 작성 요청 URL:", reviewApiUrl);
 
-      const response = await fetch(apiUrl, {
+      const response = await fetch(reviewApiUrl, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(reviewData),
       });
 
