@@ -40,27 +40,22 @@ public class MovieService {
 
     private final String BASE_IMAGE_URL = "https://image.tmdb.org/t/p";
 
-    // tmdb api를 이용해서 인기 영화 목록 정보를 받아와 저장합니다.
-    // 이미 있는 영화에 대해서는 정보를 업데이트합니다.
+    // tmdb api를 이용해서 영화 정보를 받아와 저장합니다.
+    // 이미 있는 영화는 정보를 업데이트합니다.
     @Transactional
-    public void fetchAndSaveMovies(int pages) {
-        for (int i = 1; i <= pages; i++) {
-            List<MovieDto> movieDtos = tmdbService.fetchMovies(i);
+    public void fetchAndSaveMovies(Object source) { // source: Integer(페이지 수) 또는 String(키워드)
+        List<MovieDto> movieDtos;
 
-            for (MovieDto movieDto : movieDtos) {
-                movieRepository.findByTmdbId(movieDto.id()).ifPresentOrElse(
-                        movie -> updateMovie(movie, movieDto),
-                        () -> movieRepository.save(movieDto.toEntity(BASE_IMAGE_URL))
-                );
+        if (source instanceof Integer pages) { // 인기 영화를 받아 초기데이터 세팅
+            movieDtos = new ArrayList<>();
+            for (int i = 1; i <= pages; i++) {
+                movieDtos.addAll(tmdbService.fetchMovies(i));
             }
+        } else if (source instanceof String keyword) { // 키워드로 검색
+            movieDtos = tmdbService.searchMovies(keyword);
+        } else {
+            throw new IllegalArgumentException("지원되지 않는 검색 타입입니다.");
         }
-    }
-
-    // tmdb api를 이용해서 영화 검색 결과를 받아와 저장합니다.
-    // 이미 있는 영화에 대해서는 정보를 업데이트합니다.
-    @Transactional
-    public void fetchAndSaveMovies(String keyword) {
-        List<MovieDto> movieDtos = tmdbService.searchMovies(keyword);
 
         for (MovieDto movieDto : movieDtos) {
             movieRepository.findByTmdbId(movieDto.id()).ifPresentOrElse(
@@ -95,16 +90,12 @@ public class MovieService {
     }
 
     private Sort getSort(String sortBy) {
-        if (sortBy.equalsIgnoreCase("id")) {
-            return Sort.by(Sort.Direction.ASC, "id");
-        }
-        if (sortBy.equalsIgnoreCase("rating")) {
-            return Sort.by(Sort.Direction.DESC, "averageRating");
-        }
-        if (sortBy.equalsIgnoreCase("ratingCount")) {
-            return Sort.by(Sort.Direction.DESC, "ratingCount");
-        }
-        throw new RuntimeException("잘못된 정렬기준입니다.");
+        return switch (sortBy) {
+            case "id" -> Sort.by(Sort.Direction.ASC, "id");
+            case "rating" -> Sort.by(Sort.Direction.DESC, "averageRating");
+            case "ratingCount" -> Sort.by(Sort.Direction.DESC, "ratingCount");
+            default -> throw new RuntimeException("잘못된 정렬 기준입니다.");
+        };
     }
 
     @Transactional

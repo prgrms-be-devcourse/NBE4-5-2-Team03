@@ -45,7 +45,7 @@ export default function ClientPage({
     try {
       // console.log("삭제 요청 favoriteId:", favoriteId); // ✅ 삭제 요청 확인용 로그
 
-      const res = await client.DELETE("/api/favorite/{id}", {
+      const res = await client.DELETE("/api/favorites/{id}", {
         params: { path: { id: favoriteId } },
       });
 
