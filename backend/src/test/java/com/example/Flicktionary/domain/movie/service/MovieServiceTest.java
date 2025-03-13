@@ -192,7 +192,7 @@ class MovieServiceTest {
 
         assertThat(thrown)
                 .isInstanceOf(RuntimeException.class)
-                .hasMessage("잘못된 정렬기준입니다.");
+                .hasMessage("잘못된 정렬 기준입니다.");
     }
 
     @Test

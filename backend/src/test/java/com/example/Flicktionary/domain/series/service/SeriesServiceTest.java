@@ -1,14 +1,8 @@
 package com.example.Flicktionary.domain.series.service;
 
-import com.example.Flicktionary.domain.actor.repository.ActorRepository;
-import com.example.Flicktionary.domain.director.repository.DirectorRepository;
-import com.example.Flicktionary.domain.genre.repository.GenreRepository;
 import com.example.Flicktionary.domain.series.dto.SeriesDetailResponse;
-import com.example.Flicktionary.domain.series.dto.SeriesSummaryResponse;
 import com.example.Flicktionary.domain.series.entity.Series;
 import com.example.Flicktionary.domain.series.repository.SeriesRepository;
-import com.example.Flicktionary.global.dto.PageDto;
-import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,18 +10,16 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.data.domain.*;
-import org.springframework.test.context.ActiveProfiles;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -77,7 +69,7 @@ public class SeriesServiceTest {
 
     @Test
     @DisplayName("Series 목록 조회 - 평점 내림차순 정렬")
-    void getSeriesSortByRatingTest(){
+    void getSeriesSortByRatingTest() {
         String keyword = "", sortBy = "rating";
         int page = 1, pageSize = 10;
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
@@ -105,7 +97,7 @@ public class SeriesServiceTest {
 
     @Test
     @DisplayName("Series 목록 조회 - 리뷰 개수 내림차순 정렬")
-    void getSeriesSortByRatingCountTest(){
+    void getSeriesSortByRatingCountTest() {
         String keyword = "", sortBy = "ratingCount";
         int page = 1, pageSize = 10;
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
@@ -132,7 +124,7 @@ public class SeriesServiceTest {
 
     @Test
     @DisplayName("Series 목록 조회 - 검색")
-    void getSeriesForSearchTest(){
+    void getSeriesForSearchTest() {
         String keyword = "The", sortBy = "id";
         int page = 1, pageSize = 10;
         ArgumentCaptor<String> captor = ArgumentCaptor.forClass(String.class);
@@ -180,6 +172,7 @@ public class SeriesServiceTest {
         given(seriesRepository.findById(seriesId))
                 .willReturn(Optional.of(Series.builder()
                         .id(seriesId)
+                        .fetchDate(LocalDate.now())
                         .tmdbId(124L)
                         .title("testTitle")
                         .build()));
@@ -208,7 +201,7 @@ public class SeriesServiceTest {
         // then
         assertThat(thrown)
                 .isInstanceOf(RuntimeException.class)
-                        .hasMessage("id에 해당하는 Series가 존재하지 않습니다.");
+                .hasMessage("id에 해당하는 Series가 존재하지 않습니다.");
         then(seriesRepository).should().findById(seriesId);
     }
 }

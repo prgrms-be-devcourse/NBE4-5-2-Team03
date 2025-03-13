@@ -141,9 +141,6 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 작성 실패(리뷰 내용이 null이거나 빈 문자열일 때 예외 발생)")
     void printReviewFailNull() {
-        given(userAccountRepository.findById(testUser.getId())).willReturn(Optional.of(testUser));
-        given(movieRepository.findById(testMovie.getId())).willReturn(Optional.of(testMovie));
-
         // 리뷰 내용이 비어있는 리뷰 생성
         ReviewDto reviewEmpty = ReviewDto.builder()
                 .userAccountId(testUser.getId())
@@ -172,16 +169,11 @@ public class ReviewServiceTest {
         assertThat(thrownOnNull)
                 .isInstanceOf(IllegalArgumentException.class)
                 .hasMessage("리뷰 내용을 입력해주세요.");
-        then(userAccountRepository).should(times(2)).findById(testUser.getId());
-        then(movieRepository).should(times(2)).findById(testMovie.getId());
     }
 
     @Test
     @DisplayName("리뷰 작성 실패(평점이 없을 때 예외 발생)")
     void printReviewFailRating() {
-        given(userAccountRepository.findById(testUser.getId())).willReturn(Optional.of(testUser));
-        given(movieRepository.findById(testMovie.getId())).willReturn(Optional.of(testMovie));
-
         // 평점이 없는 리뷰 생성
         ReviewDto reviewNoRating = ReviewDto.builder()
                 .userAccountId(testUser.getId())

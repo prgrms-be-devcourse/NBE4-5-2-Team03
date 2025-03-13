@@ -210,7 +210,7 @@ public class ReviewControllerTest {
                 ));
 
         // mockMvc로 get 요청 후 검증
-        mockMvc.perform(get("/api/reviews/movie/" + reviewDto1.getMovieId())
+        mockMvc.perform(get("/api/reviews/movies/" + reviewDto1.getMovieId())
                 .param("page", "0")
                 .param("size", "5"))
                 .andExpect(status().isOk())

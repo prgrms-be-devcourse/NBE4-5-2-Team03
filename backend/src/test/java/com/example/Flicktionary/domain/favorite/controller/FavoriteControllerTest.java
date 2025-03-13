@@ -77,7 +77,7 @@ public class FavoriteControllerTest {
         // When & Then
         ResultActions resultActions = mvc
                 .perform(
-                        post("/api/favorite")
+                        post("/api/favorites")
                                 .content("""
                                         {
                                             "userId": "%d",
@@ -129,7 +129,7 @@ public class FavoriteControllerTest {
         // When & Then
         ResultActions resultActions = mvc
                 .perform(
-                        get("/api/favorite/%d".formatted(userId))
+                        get("/api/favorites/%d".formatted(userId))
                                 .contentType(
                                         new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                                 )
@@ -160,7 +160,7 @@ public class FavoriteControllerTest {
         // When & Then
         ResultActions resultActions = mvc
                 .perform(
-                        delete("/api/favorite/%d".formatted(id))
+                        delete("/api/favorites/%d".formatted(id))
                                 .contentType(
                                         new MediaType(MediaType.APPLICATION_JSON, StandardCharsets.UTF_8)
                                 )
@@ -195,7 +195,7 @@ public class FavoriteControllerTest {
 
         // When & Then
 
-        ResultActions resultActions = mvc.perform(post("/api/favorite")
+        ResultActions resultActions = mvc.perform(post("/api/favorites")
                         .content(content)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print());
@@ -221,7 +221,7 @@ public class FavoriteControllerTest {
 
         // When & Then
         // 존재하지 않는 ContentID 저장 시도 (IllegalArgumentException 발생, 400 Bad Request)
-        ResultActions resultActions = mvc.perform(post("/api/favorite")
+        ResultActions resultActions = mvc.perform(post("/api/favorites")
                         .content("""
                                 {
                                     "userId": "%d",
@@ -253,7 +253,7 @@ public class FavoriteControllerTest {
                 .willThrow(new IllegalArgumentException("User not found"));
 
         // When & Then
-        ResultActions resultActions = mvc.perform(post("/api/favorite")
+        ResultActions resultActions = mvc.perform(post("/api/favorites")
                         .content("""
                                 {
                                     "userId": "%d",
