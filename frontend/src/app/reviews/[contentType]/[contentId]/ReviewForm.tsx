@@ -24,6 +24,8 @@ export default function ReviewForm({
   const [loading, setLoading] = useState(false);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  const isLoggedIn = !!localStorage.getItem("token");
+
   const handleSubmit = async () => {
     if (!content.trim()) return alert("리뷰를 입력해주세요.");
     if (rating === null) return alert("평점을 선택해주세요.");
@@ -113,6 +115,16 @@ export default function ReviewForm({
       textareaRef.current.style.height = `${textareaRef.current.scrollHeight}px`;
     }
   };
+
+  // 로그인되지 않은 경우 로그인 안내 메시지 표시
+  if (!isLoggedIn) {
+    return (
+      <div className="mb-6">
+        <p>리뷰를 작성하려면 로그인이 필요합니다.</p>
+        <Button onClick={() => router.push("/login")}>로그인</Button>
+      </div>
+    );
+  }
 
   return (
     <div className="mb-6">
