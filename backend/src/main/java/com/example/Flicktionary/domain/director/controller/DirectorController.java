@@ -39,7 +39,7 @@ public class DirectorController {
 
         if (directorOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ResponseDto.of(HttpStatus.NOT_FOUND.value() + "", "%d번 감독을 찾을 수 없습니다.없습니다.".formatted(id)));
+                    .body(ResponseDto.of(HttpStatus.NOT_FOUND.value() + "", "%d번 감독을 찾을 수 없습니다.".formatted(id)));
         }
 
         Director director = directorOpt.get();

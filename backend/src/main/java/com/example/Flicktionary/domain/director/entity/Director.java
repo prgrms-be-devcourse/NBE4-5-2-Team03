@@ -25,10 +25,10 @@ public class Director {
 
     private String profilePath;
 
-    @OneToMany(mappedBy = "director", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "director", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Movie> movies = new ArrayList<>();
 
-    @OneToMany(mappedBy = "director", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "director", fetch = FetchType.LAZY, cascade = CascadeType.PERSIST)
     private List<Series> series = new ArrayList<>();
 
     public Director(Long id, String name, String profilePath) {
