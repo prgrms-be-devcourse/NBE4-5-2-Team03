@@ -9,6 +9,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.Optional;
 
@@ -17,6 +18,7 @@ import static org.assertj.core.api.BDDAssertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
 
@@ -36,6 +38,9 @@ class UserAccountServiceTest {
     @Mock
     private UserAccountRepository userAccountRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserAccountService userAccountService;
 
@@ -44,6 +49,7 @@ class UserAccountServiceTest {
     void givenDtoWhenRegisteringUserWillPersistUserAccount() {
         given(userAccountRepository.save(any(UserAccount.class)))
                 .willReturn(userAccountDto.toEntity());
+        given(passwordEncoder.encode(anyString())).willReturn(userAccountDto.password());
 
         UserAccountDto resUserAccountDto = userAccountService.registerUser(userAccountDto);
 
@@ -85,6 +91,7 @@ class UserAccountServiceTest {
                 .willReturn(Optional.of(userAccountDto.toEntity()));
         given(userAccountRepository.save(any(UserAccount.class)))
                 .willReturn(newUserAccountDto.toEntity());
+        given(passwordEncoder.encode(anyString())).willReturn(newUserAccountDto.password());
 
         UserAccountDto result = userAccountService.modifyUser(
                 userAccountDto.id(),

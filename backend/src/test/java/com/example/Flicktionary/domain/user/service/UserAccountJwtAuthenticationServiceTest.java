@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.LocalDateTime;
@@ -46,6 +47,9 @@ class UserAccountJwtAuthenticationServiceTest {
     @Mock
     private UserAccountRepository userAccountRepository;
 
+    @Mock
+    private PasswordEncoder passwordEncoder;
+
     @InjectMocks
     private UserAccountJwtAuthenticationService userAccountJwtAuthenticationService;
 
@@ -69,6 +73,7 @@ class UserAccountJwtAuthenticationServiceTest {
     @Test
     void givenCorrectUserCredentialsWhenCreatingTokenThenReturnTokenWithCorrectClaims() {
         given(userAccountRepository.findByUsername(anyString())).willReturn(Optional.of(userAccount));
+        given(passwordEncoder.matches(anyString(), anyString())).willReturn(true);
 
         String token = userAccountJwtAuthenticationService.createNewAccessTokenForUser(
                 userAccount.getUsername(),
