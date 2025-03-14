@@ -16,11 +16,11 @@ export default async function Page({
     });
 
     // API 응답 데이터 검증
-    if (!response || !response.data) {
+    if (!response || !response.data || !response.data.data) {
       return <div>배우 정보를 불러오는 데 실패했습니다.</div>;
     }
 
-    return <ClientPage actor={response.data} />;
+    return <ClientPage actor={response.data.data} />;
   } catch (error) {
     console.error("에러 발생:", error);
     return <div>에러 발생: {String(error)}</div>;

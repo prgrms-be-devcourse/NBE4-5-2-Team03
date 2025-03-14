@@ -22,11 +22,11 @@ export default async function Page({
     },
   });
 
-  if (response.data == null) {
+  if (response.data == null || response.data.data == null) {
     return <div>감독 목록을 불러오는데 실패했습니다.</div>;
   }
 
-  const data = response.data;
+  const data = response.data.data;
   return (
     <ClientPage data={data} keyword={keyword} pageSize={pageSize} page={page} />
   );

@@ -16,7 +16,7 @@ export default async function Page({ params }: { params: { id: number } }) {
       return <div>배우 정보를 불러오는 데 실패했습니다.</div>;
     }
 
-    return <ClientPage director={response.data} />;
+    return <ClientPage director={response.data.data} />;
   } catch (error) {
     console.error("에러 발생:", error);
     return <div>에러 발생: {String(error)}</div>;
