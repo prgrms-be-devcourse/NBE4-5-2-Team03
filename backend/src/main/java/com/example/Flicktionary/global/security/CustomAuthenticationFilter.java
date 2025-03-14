@@ -2,12 +2,15 @@ package com.example.Flicktionary.global.security;
 
 import com.example.Flicktionary.domain.user.entity.UserAccount;
 import com.example.Flicktionary.domain.user.service.UserAccountJwtAuthenticationService;
+import com.example.Flicktionary.global.dto.ResponseDto;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -17,6 +20,7 @@ import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.net.URI;
 import java.util.Arrays;
 import java.util.stream.Stream;
 
@@ -48,7 +52,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     };
 
     @Override
-    protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
+    protected boolean shouldNotFilter(HttpServletRequest request) {
         String url = request.getRequestURI();
         return Stream.of(excluded_urls).anyMatch(path -> pathMatcher.match(path, url));
     }
@@ -69,11 +73,23 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
             return;
         }
 
-        // 접근 토큰에서 회원 정보를 꺼내 해당 회원을 현재 인증된 회원으로 지정한다.
-        UserAccount requestUser = userAccountJwtAuthenticationService.retrieveUserFromAccessToken(authCookie.getValue());
-        UserDetails customUserDetails = customUserDetailsService.loadUserByUsername(requestUser.getUsername());
-        Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        filterChain.doFilter(request, response);
+        try {
+            // 접근 토큰에서 회원 정보를 꺼내 해당 회원을 현재 인증된 회원으로 지정한다.
+            UserAccount requestUser = userAccountJwtAuthenticationService.retrieveUserFromAccessToken(authCookie.getValue());
+            UserDetails customUserDetails = customUserDetailsService.loadUserByUsername(requestUser.getUsername());
+            Authentication authentication = new UsernamePasswordAuthenticationToken(customUserDetails, null, customUserDetails.getAuthorities());
+            SecurityContextHolder.getContext().setAuthentication(authentication);
+            filterChain.doFilter(request, response);
+        } catch (Exception e) {
+            // 접근 토큰이 유효하지 않을때 리프레시 토큰으로 재발급을 시도한다.
+            response.setContentType("application/json;charset=UTF-8");
+            response.setStatus(HttpStatus.TEMPORARY_REDIRECT.value());
+            response.setHeader("Location", URI.create("/api/users/refresh").toString());
+            response.getWriter().write(
+                    new ObjectMapper().writeValueAsString(ResponseDto.of(
+                            HttpStatus.TEMPORARY_REDIRECT.value() + "",
+                            "접근 토큰이 유효하지 않습니다."
+                    )));
+        }
     }
 }
