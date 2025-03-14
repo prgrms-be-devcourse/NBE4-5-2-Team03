@@ -1,17 +1,13 @@
 import client from "@/lib/backend/client";
 import ClientPage from "./ClientPage";
 
-export default async function Page({
-  params,
-}: {
-  params: { actorId: number };
-}) {
-  const { actorId } = await params;
+export default async function Page({ params }: { params: { id: number } }) {
+  const { id } = await params;
 
   try {
-    const response = await client.GET("/api/actors/{actorId}", {
+    const response = await client.GET("/api/directors/{id}", {
       params: {
-        path: { actorId },
+        path: { id },
       },
     });
 
@@ -20,7 +16,7 @@ export default async function Page({
       return <div>배우 정보를 불러오는 데 실패했습니다.</div>;
     }
 
-    return <ClientPage actor={response.data} />;
+    return <ClientPage director={response.data} />;
   } catch (error) {
     console.error("에러 발생:", error);
     return <div>에러 발생: {String(error)}</div>;

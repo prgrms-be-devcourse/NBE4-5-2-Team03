@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useState } from "react";
 
 export default function ClientLayout({
   children,
@@ -11,6 +12,13 @@ export default function ClientLayout({
   fontVariable: string;
   fontClassName: string;
 }>) {
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+
+  // 배우나 감독을 눌러서 이동하면 드롭다운이 닫힌다.
+  const handleLinkClick = () => {
+    setIsDropdownOpen(false);
+  };
+
   return (
     <html lang="ko" className={`${fontVariable}`}>
       <body className={`min-h-[100dvh] flex flex-col ${fontClassName}`}>
@@ -27,6 +35,33 @@ export default function ClientLayout({
               <Link href="/series" className="hover:text-gray-300">
                 시리즈
               </Link>
+              {/* Dropdown for 인물 */}
+              <div className="relative">
+                <button
+                  onClick={() => setIsDropdownOpen(!isDropdownOpen)}
+                  className="hover:text-gray-300"
+                >
+                  인물
+                </button>
+                {isDropdownOpen && (
+                  <div className="absolute bg-gray-800 text-white w-32 mt-2 rounded shadow-lg">
+                    <Link
+                      href="/actors"
+                      className="block px-4 py-2 hover:bg-gray-700"
+                      onClick={handleLinkClick}
+                    >
+                      배우
+                    </Link>
+                    <Link
+                      href="/directors"
+                      className="block px-4 py-2 hover:bg-gray-700"
+                      onClick={handleLinkClick}
+                    >
+                      감독
+                    </Link>
+                  </div>
+                )}
+              </div>
             </nav>
           </div>
 

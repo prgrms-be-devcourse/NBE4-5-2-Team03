@@ -18,7 +18,7 @@ interface Series {
   releaseEndDate: string;
 }
 
-interface Actor {
+interface Director {
   id: number;
   name: string;
   profilePath: string;
@@ -26,31 +26,35 @@ interface Actor {
   series: Series[];
 }
 
-export default function ActorDetailPage({ actor }: { actor: Actor }) {
+export default function DirectorDetailPage({
+  director,
+}: {
+  director: Director;
+}) {
   const router = useRouter();
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-10">
-      <h1 className="text-3xl font-bold mb-6 text-center">🎭 배우 정보</h1>
+      <h1 className="text-3xl font-bold mb-6 text-center">🎭 감독 정보</h1>
 
-      {/* 배우 정보 */}
+      {/* 감독 정보 */}
       <div className="flex flex-col md:flex-row items-center space-x-6 bg-white shadow-md p-6 rounded-lg">
         <img
-          src={actor.profilePath || "/default-profile.png"}
-          alt={actor.name}
+          src={director.profilePath || "/no-image.png"}
+          alt={director.name}
           width={150}
           height={150}
           className="rounded-lg"
         />
-        <h1 className="text-2xl font-bold">{actor.name}</h1>
+        <h1 className="text-2xl font-bold">{director.name}</h1>
       </div>
 
-      {/* 출연 영화 리스트 */}
+      {/* 연출 영화 리스트 */}
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">🎬 출연한 영화</h2>
+        <h2 className="text-xl font-semibold mb-4">🎬 연출한 영화</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {actor.movies.length > 0 ? (
-            actor.movies.map((movie) => (
+          {director.movies.length > 0 ? (
+            director.movies.map((movie) => (
               <div
                 key={movie.id}
                 className="bg-white shadow-md p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition"
@@ -68,17 +72,17 @@ export default function ActorDetailPage({ actor }: { actor: Actor }) {
               </div>
             ))
           ) : (
-            <p className="text-gray-500">출연한 영화가 없습니다.</p>
+            <p className="text-gray-500">연출한 영화가 없습니다.</p>
           )}
         </div>
       </div>
 
       {/* 출연한 시리즈 리스트 */}
       <div className="mt-8">
-        <h2 className="text-xl font-semibold mb-4">📺 출연한 시리즈</h2>
+        <h2 className="text-xl font-semibold mb-4">📺 연출한 시리즈</h2>
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          {actor.series.length > 0 ? (
-            actor.series.map((series) => (
+          {director.series.length > 0 ? (
+            director.series.map((series) => (
               <div
                 key={series.id}
                 className="bg-white shadow-md p-4 rounded-lg cursor-pointer hover:bg-gray-50 transition"
@@ -99,7 +103,7 @@ export default function ActorDetailPage({ actor }: { actor: Actor }) {
               </div>
             ))
           ) : (
-            <p className="text-gray-500">출연한 시리즈가 없습니다.</p>
+            <p className="text-gray-500">연출한 시리즈가 없습니다.</p>
           )}
         </div>
       </div>
