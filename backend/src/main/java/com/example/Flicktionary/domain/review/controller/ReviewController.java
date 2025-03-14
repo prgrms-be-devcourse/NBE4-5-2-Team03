@@ -11,8 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/reviews")
 @RequiredArgsConstructor
@@ -32,8 +30,12 @@ public class ReviewController {
 
     // 모든 리뷰 조회
     @GetMapping
-    public ResponseEntity<ResponseDto<List<ReviewDto>>> getAllReviews() {
-        List<ReviewDto> reviews = reviewService.findAllReviews();
+    public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> getAllReviews(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+
+        PageDto<ReviewDto> reviews = reviewService.findAllReviews(page, size);
         return ResponseEntity.ok(ResponseDto.ok(reviews));
     }
 

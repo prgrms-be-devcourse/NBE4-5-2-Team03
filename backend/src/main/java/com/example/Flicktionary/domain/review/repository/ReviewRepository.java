@@ -22,6 +22,9 @@ public interface ReviewRepository extends JpaRepository<Review, Long> {
     // 중복 리뷰를 검사함
     boolean existsByUserAccount_IdAndMovie_IdAndSeries_Id(Long userAccountId, Long movieId, Long seriesId);
 
+    // 모든 리뷰를 페이징하여 가져오는 기능 추가
+    Page<Review> findAll(Pageable pageable);
+
     // 특정 영화의 평균 평점을 계산하는 기능
 //    @Query("SELECT AVG(r.rating) FROM Review r WHERE r.movie.id = :movieId")
 //    Double findAverageRatingByMovie_Id(Long movieId);

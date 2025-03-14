@@ -8,18 +8,21 @@ import com.example.Flicktionary.domain.review.repository.ReviewRepository;
 import com.example.Flicktionary.domain.series.entity.Series;
 import com.example.Flicktionary.domain.series.repository.SeriesRepository;
 import com.example.Flicktionary.domain.user.entity.UserAccount;
+import com.example.Flicktionary.domain.user.entity.UserAccountType;
 import com.example.Flicktionary.domain.user.repository.UserAccountRepository;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -33,6 +36,13 @@ public class ReviewService {
 
     // 리뷰 생성
     public ReviewDto createReview(ReviewDto reviewDto, Long userId) {
+
+        // 임시 코드: CustomUserDetails 객체 임시 생성 및 SecurityContextHolder에 설정
+        // TODO: 로그인 구현되면 지울것
+        UserAccount tempUserAccount = new UserAccount(1L, "test", "test", "test@example.com", "test", UserAccountType.USER);
+        CustomUserDetails userDetails = new CustomUserDetails(tempUserAccount);
+        Authentication authentication = new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // 사용자 권한 검사. 먼저 user를 찾아 id 저장 없을 경우 오류 호출
         UserAccount userAccount = userAccountRepository.findById(userId)
@@ -78,12 +88,12 @@ public class ReviewService {
     }
 
     // 모든 리뷰 조회
-    public List<ReviewDto> findAllReviews() {
+    public PageDto<ReviewDto> findAllReviews(int page, int size) {
 
         // 모든 리뷰를 찾아 리턴
-        return reviewRepository.findAll().stream()
-                .map(ReviewDto::fromEntity)
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size);
+        Page<ReviewDto> reviewDtoPage = reviewRepository.findAll(pageable).map(ReviewDto::fromEntity);
+        return new PageDto<>(reviewDtoPage);
     }
 
     // 특정 영화의 평균 평점 조회
