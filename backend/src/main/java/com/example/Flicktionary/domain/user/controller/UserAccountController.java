@@ -58,6 +58,7 @@ public class UserAccountController {
      */
     @PostMapping("/login")
     public ResponseEntity<ResponseDto<?>> loginUser(@RequestBody LoginRequest loginRequest, HttpServletResponse response) {
+        // DB 접근을 1회 줄이기 위해 아래 UserAccountJwtAuthenticationService의 두 메서드를 하나로 합치는 것을 검토
         Cookie accessToken = newCookieWithDefaultSettings("accessToken", userAccountJwtAuthenticationService.createNewAccessTokenForUser(loginRequest.username, loginRequest.password));
         Cookie refreshToken = newCookieWithDefaultSettings("refreshToken", userAccountJwtAuthenticationService.rotateRefreshTokenOfUser(loginRequest.username));
         response.addCookie(accessToken);

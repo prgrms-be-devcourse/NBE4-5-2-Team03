@@ -5,6 +5,7 @@ import com.example.Flicktionary.domain.user.entity.UserAccount;
 import com.example.Flicktionary.domain.user.entity.UserAccountType;
 import com.example.Flicktionary.domain.user.repository.UserAccountRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,13 +19,17 @@ public class UserAccountService {
 
     private final UserAccountRepository userAccountRepository;
 
+    private final PasswordEncoder passwordEncoder;
+
     /**
      * 새 회원을 생성한 뒤 영속한다.
      * @param userAccountDto 새로 생성할 회원의 정보가 담긴 DTO
      * @return 영속된 회원에 해당하는 DTO
      */
     public UserAccountDto registerUser(UserAccountDto userAccountDto) {
-        return UserAccountDto.from(userAccountRepository.save(userAccountDto.toEntity()));
+        UserAccount userAccount = userAccountDto.toEntity();
+        userAccount.setPassword(passwordEncoder.encode("{bcrypt}" + userAccount.getPassword()));
+        return UserAccountDto.from(userAccountRepository.save(userAccount));
     }
 
     /**
@@ -37,7 +42,7 @@ public class UserAccountService {
         UserAccount userAccount = userAccountRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("유저를 찾을 수 없습니다."));
         userAccount.setUsername(userAccountDto.username());
-        userAccount.setPassword(userAccountDto.password());
+        userAccount.setPassword(passwordEncoder.encode("{bcrypt}" + userAccountDto.password()));
         userAccount.setEmail(userAccountDto.email());
         userAccount.setNickname(userAccountDto.nickname());
         userAccount.setRole(UserAccountType.valueOf(userAccountDto.role()));

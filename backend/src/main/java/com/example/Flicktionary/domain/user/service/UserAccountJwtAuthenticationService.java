@@ -6,6 +6,7 @@ import com.example.Flicktionary.global.utils.JwtUtils;
 import com.example.Flicktionary.global.utils.UuidUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -22,6 +23,8 @@ import java.util.UUID;
 public class UserAccountJwtAuthenticationService {
 
     private final UserAccountRepository userAccountRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * JWT 서명/검증에 사용될 비밀키
@@ -49,7 +52,7 @@ public class UserAccountJwtAuthenticationService {
      */
     public String createNewAccessTokenForUser(String username, String password) {
         UserAccount userAccount = getUserByUsername(username);
-        if (!userAccount.getPassword().equals(password)) {
+        if (!passwordEncoder.matches("{bcrypt}" + password, userAccount.getPassword())) {
             throw new RuntimeException("비밀번호가 틀립니다.");
         }
         return createNewAccessTokenWithClaims(userAccount.getUsername(), userAccount.getNickname());
