@@ -13,9 +13,10 @@ import com.example.Flicktionary.domain.series.repository.SeriesRepository;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbPopularSeriesResponse;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbSeriesDetailResponse;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbSeriesPopularIdResponse;
-import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -55,8 +56,7 @@ public class SeriesService {
     private final String baseImageUrl = "https://image.tmdb.org/t/p";
 
     // 인기도 순으로 DB에 저장(페이지당 20개)
-    @PostConstruct
-    @Transactional
+    @EventListener(ContextRefreshedEvent.class)
     public void fetchPopularSeries() {
 
         if (seriesRepository.count() > 0) {
@@ -97,8 +97,7 @@ public class SeriesService {
     }
 
     // 각 시리즈의 상세 정보를 가져와서 DB에 저장
-    @Transactional
-    protected void fetchAndSaveSeriesDetails(Long seriesId) throws InterruptedException {
+    private void fetchAndSaveSeriesDetails(Long seriesId) throws InterruptedException {
         String url = String.format("https://api.themoviedb.org/3/tv/%d?language=ko-KR&append_to_response=credits", seriesId);
         try {
             HttpHeaders headers = new HttpHeaders();
