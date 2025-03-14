@@ -24,5 +24,6 @@ public class SeriesCast {
     @JoinColumn(name = "actor_id", nullable = false)
     private Actor actor;
 
+    @Column(length = 500)
     private String characterName;
 }

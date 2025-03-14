@@ -158,8 +158,15 @@ public class MovieService {
                 .findFirst();
         directorData.ifPresent(d -> {
             Director director = directorRepository.findById(d.id())
-                    .orElseGet(() -> directorRepository.save(new Director(d.id(), d.name(),
-                            d.profilePath() == null ? null : BASE_IMAGE_URL + "/w185" + d.profilePath())));
+                    .orElseGet(() ->
+                            directorRepository.save(new Director(d.id(), d.name(),
+                                    d.profilePath() == null ? null : BASE_IMAGE_URL + "/w185" + d.profilePath()))
+                    );
+
+            // 감독이 연출한 영화 리스트에 현재 영화 추가
+            if (!director.getMovies().contains(movie)) {  // 중복 추가 방지
+                director.getMovies().add(movie);
+            }
             movie.setDirector(director);
         });
 

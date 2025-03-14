@@ -9,6 +9,9 @@ import com.example.Flicktionary.domain.series.entity.Series;
 import com.example.Flicktionary.domain.series.entity.SeriesCast;
 import com.example.Flicktionary.domain.series.repository.SeriesCastRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
@@ -46,5 +49,12 @@ public class ActorService {
                 .distinct()
                 .sorted(Comparator.comparing(Series::getReleaseStartDate).reversed()) // tmdbId 기준으로 정렬, 최신 순 정렬
                 .collect(Collectors.toList());
+    }
+
+    // 배우 목록 조회
+    public Page<Actor> getActors(String keyword, int page, int pageSize) {
+        Pageable pageable = PageRequest.of(page - 1, pageSize);
+        String formattedKeyword = keyword.toLowerCase().replaceAll(" ", "");
+        return actorRepository.findByNameLike(keyword, pageable);
     }
 }

@@ -1,15 +1,15 @@
 package com.example.Flicktionary.domain.actor.controller;
 
+import com.example.Flicktionary.domain.actor.dto.ActorDto;
 import com.example.Flicktionary.domain.actor.entity.Actor;
 import com.example.Flicktionary.domain.actor.service.ActorService;
 import com.example.Flicktionary.domain.movie.entity.Movie;
 import com.example.Flicktionary.domain.series.entity.Series;
+import com.example.Flicktionary.global.dto.PageDto;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
@@ -35,6 +35,17 @@ public class ActorController {
         return ResponseEntity.ok(new ActorResponse(actor, movies, series));
     }
 
+    @GetMapping
+    public ResponseEntity<PageDto<ActorDto>> getActors(
+            @RequestParam(defaultValue = "") String keyword,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int pageSize
+    ) {
+        Page<Actor> actorPage = actorService.getActors(keyword, page, pageSize);
+
+        return ResponseEntity.ok(new PageDto<>(actorPage.map(ActorDto::new)));
+    }
+
     // DTO 클래스 (내부 클래스로 정의 가능)
     private record ActorResponse(Long id, String name, String profilePath, List<MovieDTO> movies,
                                  List<SeriesDTO> series) {
@@ -45,14 +56,14 @@ public class ActorController {
         }
     }
 
-    private record MovieDTO(Long id, String title, String posterPath, String releaseDate) {
+    public record MovieDTO(Long id, String title, String posterPath, String releaseDate) {
         public MovieDTO(Movie movie) {
             this(movie.getId(), movie.getTitle(), movie.getPosterPath(),
                     movie.getReleaseDate() != null ? movie.getReleaseDate().toString() : null);
         }
     }
 
-    private record SeriesDTO(Long id, String title, String posterPath, String releaseStartDate, String releaseEndDate) {
+    public record SeriesDTO(Long id, String title, String posterPath, String releaseStartDate, String releaseEndDate) {
         public SeriesDTO(Series series) {
             this(series.getId(), series.getTitle(), series.getImageUrl(),
                     series.getReleaseStartDate() != null ? series.getReleaseStartDate().toString() : null,

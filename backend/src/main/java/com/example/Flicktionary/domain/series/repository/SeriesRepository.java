@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 @Repository
@@ -21,4 +22,6 @@ public interface SeriesRepository extends JpaRepository<Series, Long> {
 
     @Query("SELECT s FROM Series s WHERE s.title LIKE CONCAT('%', :keyword, '%')")
     Page<Series> findByTitleLike(@Param("keyword") String keyword, Pageable pageable);
+
+    List<Series> findByDirectorId(Long directorId);
 }
