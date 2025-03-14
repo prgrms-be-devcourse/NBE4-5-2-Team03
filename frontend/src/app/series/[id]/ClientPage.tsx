@@ -73,7 +73,10 @@ export default function ClientPage({
       <div>
         <h2 className="text-2xl font-bold mb-4">🎬 감독</h2>
         <div className="flex">
-          <Card className="w-40 flex flex-col items-center p-4 shadow-md">
+          <Card
+            className="w-40 flex flex-col items-center p-4 shadow-md cursor-pointer hover:bg-gray-100 transition"
+            onClick={() => router.push(`/directors/${data.director?.id}`)}
+          >
             <img
               src={data.director?.profilePath || "/no-image.png"} // 프로필 이미지 (임시)
               alt={data.director?.name}

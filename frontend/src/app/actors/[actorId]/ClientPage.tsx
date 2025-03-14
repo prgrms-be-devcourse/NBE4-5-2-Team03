@@ -36,7 +36,7 @@ export default function ActorDetailPage({ actor }: { actor: Actor }) {
       {/* 배우 정보 */}
       <div className="flex flex-col md:flex-row items-center space-x-6 bg-white shadow-md p-6 rounded-lg">
         <img
-          src={actor.profilePath || "/default-profile.png"}
+          src={actor.profilePath || "/no-image.png"}
           alt={actor.name}
           width={150}
           height={150}
@@ -57,7 +57,7 @@ export default function ActorDetailPage({ actor }: { actor: Actor }) {
                 onClick={() => router.push(`/movies/${movie.id}`)}
               >
                 <img
-                  src={movie.posterPath || "/default-movie.png"}
+                  src={movie.posterPath || "/no-image.png"}
                   alt={movie.title}
                   width={200}
                   height={300}
