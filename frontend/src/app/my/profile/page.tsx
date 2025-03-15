@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/hooks/useAuth";
+import { fetchUserProfileClient } from "@/lib/api/user";
 
 const API_BASE_URL = "http://localhost:8080"; // Spring Boot API 주소
 
@@ -21,26 +22,15 @@ export default function MyProfile() {
   const router = useRouter();
 
   useEffect(() => {
-    const fetchUserProfile = async () => {
-      try {
-        const response = await fetch(`${API_BASE_URL}/api/users`, {
-          method: "GET",
-          credentials: "include",
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          setUser(data.data); // 서버 응답 형식에 맞게 수정
-        } else {
-          console.error("사용자 정보를 가져오지 못했습니다.");
-        }
-      } catch (error) {
-        console.error("에러 발생:", error);
-      }
+    const loadUserProfile = async () => {
+      const userData = await fetchUserProfileClient(); // 클라이언트 요청
+      if (userData) setUser(userData);
     };
 
-    fetchUserProfile();
+    loadUserProfile();
   }, []);
+
+  if (!user) return <div>사용자 정보를 불러오는 중...</div>;
 
   // 비밀번호 변경 요청
   const handleChangePassword = async () => {
