@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { components } from "@/lib/backend/apiV1/schema";
 import { Card, CardContent } from "@/components/ui/card";
+import { fetchUserProfileClient } from "@/lib/api/user";
 
 interface ReviewFormProps {
   contentType: string;
@@ -29,10 +30,26 @@ export default function ReviewForm({
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const [existingReview, setExistingReview] = useState<any | null>(null);
   const [isEditing, setIsEditing] = useState(false);
-  const userAccountId = 1; // 임시로 1로 설정
+  const [userAccountId, setUserAccountId] = useState<number | null>(null);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   useEffect(() => {
-    if (allReviews && allReviews.length > 0) {
+    const fetchUser = async () => {
+      const userData = await fetchUserProfileClient();
+      if (userData && userData.id) {
+        setUserAccountId(userData.id);
+        setIsLoggedIn(true);
+      } else {
+        setUserAccountId(null);
+        setIsLoggedIn(false);
+      }
+    };
+
+    fetchUser();
+  });
+
+  useEffect(() => {
+    if (allReviews && allReviews.length > 0 && userAccountId) {
       const userReview = allReviews.find(
         (review: components["schemas"]["ReviewDto"]) =>
           review.userAccountId === userAccountId
@@ -46,6 +63,10 @@ export default function ReviewForm({
         setContent("");
         setRating(null);
       }
+    } else if (allReviews && allReviews.length > 0 && !userAccountId) {
+      setExistingReview(null);
+      setContent("");
+      setRating(null);
     } else {
       setExistingReview(null);
       setContent("");
@@ -54,6 +75,10 @@ export default function ReviewForm({
   }, [allReviews, userAccountId]);
 
   const handleSubmit = async () => {
+    if (!userAccountId) {
+      alert("로그인 후 리뷰를 작성할 수 있습니다.");
+      return;
+    }
     if (!content.trim()) return alert("리뷰를 입력해주세요.");
     if (rating === null) return alert("평점을 선택해주세요.");
 
@@ -70,7 +95,7 @@ export default function ReviewForm({
     }
 
     const reviewData = {
-      userAccountId: userAccountId, // 임시로 1로 설정
+      userAccountId: userAccountId,
       movieId: movieId,
       seriesId: seriesId,
       contentType: contentType,
@@ -238,6 +263,16 @@ export default function ReviewForm({
             </div>
           </CardContent>
         </Card>
+      ) : !isLoggedIn ? (
+        <div className="border p-4 rounded-md">
+          <p className="mb-2">로그인한 유저만 리뷰를 남길 수 있습니다.</p>
+          <div className="flex gap-2">
+            <Button onClick={() => router.push("/login")}>로그인</Button>
+            <Button variant="outline" onClick={() => router.push("/register")}>
+              회원가입
+            </Button>
+          </div>
+        </div>
       ) : (
         <>
           {/* 별점 선택 UI*/}
