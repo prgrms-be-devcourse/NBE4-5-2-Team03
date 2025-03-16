@@ -4,6 +4,7 @@ import { useRouter } from "next/navigation";
 import { Card } from "@/components/ui/card";
 import { components } from "@/lib/backend/apiV1/schema";
 import ReviewPage from "@/components/review/ClientPage";
+import FavoriteButton from "@/components/favorite/FavoriteButton";
 
 export default function ClientPage({
   data,
@@ -63,6 +64,11 @@ export default function ClientPage({
           <p className="text-gray-700">
             {data.overview?.trim() || "줄거리 정보가 없습니다."}
           </p>
+
+          {/* 즐겨찾기 추가 버튼 */}
+          <div className="mt-6">
+            <FavoriteButton contentId={data.id} contentType="MOVIE" />
+          </div>
         </div>
       </div>
 
