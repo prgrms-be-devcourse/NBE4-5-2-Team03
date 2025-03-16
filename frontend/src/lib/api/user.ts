@@ -12,11 +12,11 @@ export const fetchUserProfileServer = async (cookieHeader: string) => {
       const data = await response.json();
       return data.data; // 유저 정보 객체 반환
     } else {
-      console.error("서버: 사용자 정보를 가져오지 못했습니다.");
+      // console.error("서버: 사용자 정보를 가져오지 못했습니다.");
       return null;
     }
   } catch (error) {
-    console.error("서버: 유저 정보 가져오는 중 에러 발생:", error);
+    // console.error("서버: 유저 정보 가져오는 중 에러 발생:", error);
     return null;
   }
 };
@@ -33,11 +33,11 @@ export const fetchUserProfileClient = async () => {
       const data = await response.json();
       return data.data;
     } else {
-      console.error("클라이언트: 사용자 정보를 가져오지 못했습니다.");
+      // console.error("클라이언트: 사용자 정보를 가져오지 못했습니다.");
       return null;
     }
   } catch (error) {
-    console.error("클라이언트: 유저 정보 가져오는 중 에러 발생:", error);
+    // console.error("클라이언트: 유저 정보 가져오는 중 에러 발생:", error);
     return null;
   }
 };
