@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { components } from "@/lib/backend/apiV1/schema";
@@ -52,7 +52,7 @@ export default function ReviewForm({
     if (allReviews && allReviews.length > 0 && userAccountId) {
       const userReview = allReviews.find(
         (review: components["schemas"]["ReviewDto"]) =>
-          review.userAccountId === userAccountId
+          review.userAccountId === userAccountId,
       );
       if (userReview) {
         setExistingReview(userReview);
@@ -139,10 +139,10 @@ export default function ReviewForm({
         if (errorData.message) {
           if (
             errorData.message.includes(
-              "이미 해당 영화에 대한 리뷰를 작성하셨습니다."
+              "이미 해당 영화에 대한 리뷰를 작성하셨습니다.",
             ) ||
             errorData.message.includes(
-              "이미 해당 드라마에 대한 리뷰를 작성하셨습니다."
+              "이미 해당 드라마에 대한 리뷰를 작성하셨습니다.",
             )
           ) {
             alertMessage = errorData.message;
@@ -203,7 +203,7 @@ export default function ReviewForm({
           const errorData = await response.json();
           console.error("리뷰 삭제 실패:", errorData);
           alert(
-            `리뷰 삭제 실패: ${errorData.message || "서버 오류가 발생했습니다."}`
+            `리뷰 삭제 실패: ${errorData.message || "서버 오류가 발생했습니다."}`,
           );
         }
       } catch (error) {
@@ -268,7 +268,7 @@ export default function ReviewForm({
           <p className="mb-2">로그인한 유저만 리뷰를 남길 수 있습니다.</p>
           <div className="flex gap-2">
             <Button onClick={() => router.push("/login")}>로그인</Button>
-            <Button variant="outline" onClick={() => router.push("/register")}>
+            <Button variant="outline" onClick={() => router.push("/signup")}>
               회원가입
             </Button>
           </div>
