@@ -47,6 +47,7 @@ public class CustomAuthenticationFilter extends OncePerRequestFilter {
     private static final String[] excluded_urls = {
             "/api/users/login",
             "/api/users/register",
+            "/api/users/status",
             "/api/users/refresh",
             "/h2-console/**"
     };
