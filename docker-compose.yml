@@ -1,0 +1,48 @@
+services:
+  mysql:
+    image: mysql:8.4.1
+    ports: 
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - flicktionary_server
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    env_file: ".env"
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+      args:
+        - 'JAR_FILE=build/libs/\*.jar'
+    depends_on:
+      mysql:
+        condition: service_healthy
+    ports:
+      - "8080:8080"
+    networks:
+      - flicktionary_server
+    env_file: ".env"
+    environment:
+      SPRING_PROFILES_ACTIVE: "prod"
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    networks:
+      - flicktionary_server
+
+volumes:
+  db_data:
+
+networks:
+  flicktionary_server:
+
