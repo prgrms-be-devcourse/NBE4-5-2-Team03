@@ -1,13 +1,31 @@
 # NBE4-5-2-Team03
 
-## 환경변수 설정
+## 프로젝트 실행
 
-backend 폴더에 .env 파일을 작성합니다.
+프로젝트 루트에 아래와 같이 `.env`파일을 작성한다.
 
 ```
-JWT_SECRET_KEY={YOUR_JWT_SECRET_KEY}
-TMDB_ACCESS_TOKEN={YOUR_TMDB_ACCESS_TOKEN}
-DB_URL={YOUR_DB_URL}
-DB_USERNAME={YOUR_DB_USERNAME}
-DB_PASSWORD={YOUR_DB_PASSWORD}
+MYSQL_ROOT_PASSWORD={MySQL 인스턴스의 root 계정 비밀번호}
+MYSQL_DATABASE=flicktionary
+
+DB_USERNAME=root
+DB_PASSWORD={MySQL 인스턴스의 root 계정 비밀번호}
+DB_URL=jdbc:mysql://mysql:3306/flicktionary
+JWT_SECRET_KEY={JWT 토큰을 서명할 128비트 비밀키}
+TMDB_ACCESS_TOKEN={TMDB API 인증 토큰}
+TMDB_BASE_IMAGE_URL=localhost
+```
+
+백엔드 서비스를 컴파일 한 뒤,
+
+```
+cd backend
+./gradlew clean bootJar
+```
+
+Docker Compose로 서비스를 실행한다.
+
+```
+cd ..
+docker compose up
 ```
