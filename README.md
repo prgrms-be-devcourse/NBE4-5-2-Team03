@@ -23,9 +23,17 @@ cd backend
 ./gradlew clean bootJar
 ```
 
-Docker Compose로 서비스를 실행한다.
+Docker Compose로 BE와 DB를 실행한다.
 
 ```
 cd ..
 docker compose up
 ```
+
+마지막으로 FE를 실행한다.
+```
+cd frontend
+npm install --legacy-peer-deps
+npm run start
+```
+
