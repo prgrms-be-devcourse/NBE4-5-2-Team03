@@ -31,14 +31,14 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: "prod"
 
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    networks:
-      - flicktionary_server
+#  frontend:
+#    build:
+#      context: ./frontend
+#      dockerfile: Dockerfile
+#    ports:
+#      - "3000:3000"
+#    networks:
+#      - flicktionary_server
 
 volumes:
   db_data:
