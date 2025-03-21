@@ -15,7 +15,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -56,10 +55,10 @@ class UserAccountControllerTest {
         ));
 
         mockMvc.perform(
-                post("/api/users/register")
-                        // POST 요청 본문이 비어있으면 예외가 발생하므로 임의의 문자열을 첨부
-                        .content("{\"fake\": \"json\"}")
-                        .contentType("application/json"))
+                        post("/api/users/register")
+                                // POST 요청 본문이 비어있으면 예외가 발생하므로 임의의 문자열을 첨부
+                                .content("{\"fake\": \"json\"}")
+                                .contentType("application/json"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.id").value("1"))
                 .andExpect(jsonPath("$.data.username").value("testUsername"))
@@ -143,18 +142,18 @@ class UserAccountControllerTest {
                 .createNewAccessTokenWithRefreshToken(anyString());
     }
 
-    @DisplayName("인증 정보가 있는 클라이언트에게 로그인 상태 확인 요청을 받으면, 인등 정보가 있다고 응답한다.")
+    @DisplayName("인증 정보가 있는 클라이언트에게 로그인 상태 확인 요청을 받으면, 인증 정보가 있다고 응답한다.")
     @Test
     void givenCredentialsWhenRequestingCredentialStatusThenReturnOk() throws Exception {
         mockMvc.perform(
-                get("/api/users/status")
-                        .cookie(new Cookie("accessToken", "faketoken"),
-                                new Cookie("refreshToken", "faketoken")))
+                        get("/api/users/status")
+                                .cookie(new Cookie("accessToken", "faketoken"),
+                                        new Cookie("refreshToken", "faketoken")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.message").value("인증 정보가 존재합니다."));
     }
 
-    @DisplayName("인증 정보가 없는 클라이언트에게 로그인 상태 확인 요청을 받으면, 인등 정보가 없다고 응답한다.")
+    @DisplayName("인증 정보가 없는 클라이언트에게 로그인 상태 확인 요청을 받으면, 인증 정보가 없다고 응답한다.")
     @Test
     void givenNoCredentialsWhenRequestingCredentialStatusThenReturnForbidden() throws Exception {
         mockMvc.perform(

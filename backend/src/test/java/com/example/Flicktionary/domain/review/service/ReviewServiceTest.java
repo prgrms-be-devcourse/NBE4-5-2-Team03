@@ -11,6 +11,7 @@ import com.example.Flicktionary.domain.user.entity.UserAccount;
 import com.example.Flicktionary.domain.user.entity.UserAccountType;
 import com.example.Flicktionary.domain.user.repository.UserAccountRepository;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.exception.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -172,10 +173,10 @@ public class ReviewServiceTest {
 
         /// 검증 ///
         assertThat(thrownOnEmpty)
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("리뷰 내용을 입력해주세요.");
         assertThat(thrownOnNull)
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("리뷰 내용을 입력해주세요.");
     }
 
@@ -198,7 +199,7 @@ public class ReviewServiceTest {
 
         /// 검증 ///
         assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("평점을 매겨주세요.");
     }
 
@@ -331,7 +332,7 @@ public class ReviewServiceTest {
 
     @DisplayName("리뷰 수정")
     @Test
-    // TODO: 새로운 평점/내용 검증 로직까지 테스트하는 것을 검토
+        // TODO: 새로운 평점/내용 검증 로직까지 테스트하는 것을 검토
     void updateReview() {
         given(reviewRepository.findById(reviewDto1.getId()))
                 .willReturn(Optional.of(reviewDto1.toEntity(testUser, testMovie, null)));
@@ -421,8 +422,8 @@ public class ReviewServiceTest {
 
         /// 검증 ///
         assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("해당 리뷰를 찾을 수 없습니다.");
+                .isInstanceOf(ServiceException.class)
+                .hasMessage("1234번 리뷰를 찾을 수 없습니다.");
         then(reviewRepository).should().findById(1234L);
     }
 
@@ -464,22 +465,22 @@ public class ReviewServiceTest {
     @Test
     @DisplayName("리뷰 삭제 시 시리즈 정보 업데이트")
     void deleteReviewUpdateSeries() {
-    int ratingCount = testSeries.getRatingCount();
-    double averageRating = testSeries.getAverageRating();
-    given(reviewRepository.findById(reviewDto2.getId()))
-    .willReturn(Optional.of(reviewDto2.toEntity(testUser, null, testSeries)));
-    doNothing().when(reviewRepository).delete(any(Review.class));
+        int ratingCount = testSeries.getRatingCount();
+        double averageRating = testSeries.getAverageRating();
+        given(reviewRepository.findById(reviewDto2.getId()))
+                .willReturn(Optional.of(reviewDto2.toEntity(testUser, null, testSeries)));
+        doNothing().when(reviewRepository).delete(any(Review.class));
 
-    // 리뷰 삭제
-    reviewService.deleteReview(reviewDto2.getId());
+        // 리뷰 삭제
+        reviewService.deleteReview(reviewDto2.getId());
 
-    int newRatingCount = ratingCount - 1;
-    double newAverageRating = (averageRating * ratingCount - reviewDto2.getRating()) / newRatingCount;
+        int newRatingCount = ratingCount - 1;
+        double newAverageRating = (averageRating * ratingCount - reviewDto2.getRating()) / newRatingCount;
 
-    assertThat(testSeries.getRatingCount()).isEqualTo(newRatingCount);
-    assertThat(testSeries.getAverageRating()).isEqualTo(newAverageRating);
-    then(reviewRepository).should().findById(reviewDto2.getId());
-    then(reviewRepository).should().delete(any(Review.class));
+        assertThat(testSeries.getRatingCount()).isEqualTo(newRatingCount);
+        assertThat(testSeries.getAverageRating()).isEqualTo(newAverageRating);
+        then(reviewRepository).should().findById(reviewDto2.getId());
+        then(reviewRepository).should().delete(any(Review.class));
     }
 
     @DisplayName("존재하지 않는 리뷰 삭제")
@@ -492,7 +493,7 @@ public class ReviewServiceTest {
 
         /// 검증 ///
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("해당 리뷰를 찾을 수 없습니다.");
+                .isInstanceOf(ServiceException.class)
+                .hasMessage("%d번 리뷰를 찾을 수 없습니다.".formatted(reviewDto1.getId()));
     }
 }

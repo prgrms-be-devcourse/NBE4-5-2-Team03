@@ -9,8 +9,10 @@ import com.example.Flicktionary.domain.series.repository.SeriesRepository;
 import com.example.Flicktionary.domain.user.entity.UserAccount;
 import com.example.Flicktionary.domain.user.repository.UserAccountRepository;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,7 +30,7 @@ public class FavoriteService {
     @Transactional
     public FavoriteDto createFavorite(FavoriteDto favoriteDto) {
         UserAccount user = userAccountRepository.findById(favoriteDto.getUserId())
-                .orElseThrow(() -> new IllegalArgumentException("User not found"));
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 유저를 찾을 수 없습니다.".formatted(favoriteDto.getUserId())));
 
         // 즐겨찾기 목록에 존재하는지 확인
         boolean exists = favoriteRepository.existsByUserAccountIdAndContentTypeAndContentId(
@@ -38,7 +40,7 @@ public class FavoriteService {
         );
 
         if (exists) {
-            throw new IllegalArgumentException("이미 즐겨찾기에 추가된 항목입니다.");
+            throw new ServiceException(HttpStatus.CONFLICT.value(), "이미 즐겨찾기에 추가된 항목입니다.");
         }
 
         // contentType에 따라 contentId 검증
@@ -51,7 +53,7 @@ public class FavoriteService {
         }
 
         if (!contentExists) {
-            throw new IllegalArgumentException(favoriteDto.getContentId() + "번 ContentID를 찾을 수 없습니다.");
+            throw new ServiceException(HttpStatus.NOT_FOUND.value(), favoriteDto.getContentId() + "번 컨텐츠를 찾을 수 없습니다.");
         }
 
         Favorite favorite = favoriteDto.toEntity(user);
@@ -62,7 +64,7 @@ public class FavoriteService {
 
     public PageDto<FavoriteDto> getUserFavorites(Long userId, int page, int pageSize, String sortBy, String direction) {
         if (!userAccountRepository.existsById(userId)) {
-            throw new IllegalArgumentException("User not found");
+            throw new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 유저를 찾을 수 없습니다.".formatted(userId));
         }
 
         Sort sort = switch (sortBy) {
@@ -105,7 +107,7 @@ public class FavoriteService {
     @Transactional
     public void deleteFavorite(Long id) {
         Favorite favorite = favoriteRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Favorite not found"));
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 즐겨찾기 정보를 찾을 수 없습니다.".formatted(id)));
 
         favoriteRepository.delete(favorite);
     }

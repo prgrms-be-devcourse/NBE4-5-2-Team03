@@ -74,10 +74,10 @@ class ActorServiceTest {
     void getActorById1() {
         given(actorRepository.findById(1L)).willReturn(Optional.of(actor1));
 
-        Optional<Actor> result = actorService.getActorById(1L);
+        Actor result = actorService.getActorById(1L);
 
-        assertThat(result).isPresent();
-        assertThat(result.get()).isEqualTo(actor1);
+        assertThat(result).isNotNull();
+        assertThat(result).isEqualTo(actor1);
         then(actorRepository).should().findById(1L);
     }
 

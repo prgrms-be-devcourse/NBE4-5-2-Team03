@@ -6,14 +6,15 @@ import com.example.Flicktionary.domain.movie.entity.Movie;
 import com.example.Flicktionary.domain.movie.repository.MovieRepository;
 import com.example.Flicktionary.domain.series.entity.Series;
 import com.example.Flicktionary.domain.series.repository.SeriesRepository;
+import com.example.Flicktionary.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -28,8 +29,9 @@ public class DirectorService {
         return directorRepository.findByNameLike(formattedKeyword, pageable);
     }
 
-    public Optional<Director> getDirector(Long id) {
-        return directorRepository.findById(id);
+    public Director getDirector(Long id) {
+        return directorRepository.findById(id)
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 감독을 찾을 수 없습니다.".formatted(id)));
     }
 
     public List<Movie> getMoviesByDirectorId(Long id) {

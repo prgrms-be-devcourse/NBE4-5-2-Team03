@@ -4,6 +4,8 @@ import com.example.Flicktionary.domain.actor.entity.Actor;
 import com.example.Flicktionary.domain.actor.service.ActorService;
 import com.example.Flicktionary.domain.movie.entity.Movie;
 import com.example.Flicktionary.domain.series.entity.Series;
+import com.example.Flicktionary.global.exception.GlobalExceptionHandler;
+import com.example.Flicktionary.global.exception.ServiceException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,17 +17,20 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.ResultActions;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.Optional;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -43,7 +48,9 @@ class ActorControllerTest {
 
     @BeforeEach
     void setUp() {
-        mockMvc = MockMvcBuilders.standaloneSetup(actorController).build();
+        mockMvc = MockMvcBuilders.standaloneSetup(actorController)
+                .setControllerAdvice(new GlobalExceptionHandler()) // 예외 핸들러 적용
+                .build();
 
         testActor = new Actor(1L, "actor", "actor.png");
         testMovie = Movie.builder()
@@ -62,12 +69,12 @@ class ActorControllerTest {
                 .releaseEndDate(LocalDate.of(2023, 1, 1))
                 .build();
     }
-    
+
     @Test
     @DisplayName("배우 상세 조회 - 성공")
     void getActor1() throws Exception {
         // Given
-        given(actorService.getActorById(1L)).willReturn(Optional.of(testActor));
+        given(actorService.getActorById(1L)).willReturn(testActor);
         given(actorService.getMoviesByActorId(1L)).willReturn(List.of(testMovie));
         given(actorService.getSeriesByActorId(1L)).willReturn(List.of(testSeries));
 
@@ -85,13 +92,20 @@ class ActorControllerTest {
     @DisplayName("배우 상세 조회 - 실패 - 없는 배우 조회")
     void getActor2() throws Exception {
         // Given
-        given(actorService.getActorById(999L)).willReturn(Optional.empty());
+        long id = 999;
+        given(actorService.getActorById(id)).willThrow(
+                new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 배우를 찾을 수 없습니다.".formatted(id))
+        );
+
+        ResultActions resultActions = mockMvc.perform(get("/api/actors/%d".formatted(id))
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print());
 
         // When & Then
-        mockMvc.perform(get("/api/actors/999"))
+        resultActions
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.code").value("404"))
-                .andExpect(jsonPath("$.message").value("999번 배우가 없습니다."));
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("%d번 배우를 찾을 수 없습니다.".formatted(id)));
     }
 
     /**

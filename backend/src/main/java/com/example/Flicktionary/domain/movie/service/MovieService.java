@@ -15,18 +15,19 @@ import com.example.Flicktionary.domain.movie.repository.MovieRepository;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbMovieResponseWithDetail;
 import com.example.Flicktionary.domain.tmdb.service.TmdbService;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -94,7 +95,7 @@ public class MovieService {
             case "id" -> Sort.by(Sort.Direction.ASC, "id");
             case "rating" -> Sort.by(Sort.Direction.DESC, "averageRating");
             case "ratingCount" -> Sort.by(Sort.Direction.DESC, "ratingCount");
-            default -> throw new RuntimeException("잘못된 정렬 기준입니다.");
+            default -> throw new ServiceException(HttpStatus.BAD_REQUEST.value(), "잘못된 정렬 기준입니다.");
         };
     }
 
@@ -102,9 +103,9 @@ public class MovieService {
     public MovieResponseWithDetail getMovie(long id) {
         // fetch join을 이용해서 영화에 연관된 배우와 감독 정보를 가져옵니다.
         // 장르는 lazy loading
-        Movie movie = movieRepository.findByIdWithCastsAndDirector(id).orElseThrow(
-                () -> new NoSuchElementException("%d번 영화를 찾을 수 없습니다.".formatted(id))
-        );
+        Movie movie = movieRepository.findByIdWithCastsAndDirector(id)
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 영화를 찾을 수 없습니다.".formatted(id))
+                );
 
         // 상세 조회를 한 적이 없거나 상태가 개봉 전이고 상세 조회한 지 7일이 지났다면 tmdb api를 이용해서 상세 데이터를 받아옵니다.
         if (movie.getFetchDate() == null ||

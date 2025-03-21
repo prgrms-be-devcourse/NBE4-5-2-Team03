@@ -8,15 +8,16 @@ import com.example.Flicktionary.domain.movie.repository.MovieCastRepository;
 import com.example.Flicktionary.domain.series.entity.Series;
 import com.example.Flicktionary.domain.series.entity.SeriesCast;
 import com.example.Flicktionary.domain.series.repository.SeriesCastRepository;
+import com.example.Flicktionary.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -27,8 +28,9 @@ public class ActorService {
     private final SeriesCastRepository seriesCastRepository;
 
     // 특정 배우 조회 (출연 영화 포함)
-    public Optional<Actor> getActorById(Long id) {
-        return actorRepository.findById(id);
+    public Actor getActorById(Long id) {
+        return actorRepository.findById(id)
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 배우를 찾을 수 없습니다.".formatted(id)));
     }
 
     // 배우가 출연한 영화 리스트 조회

@@ -3,11 +3,10 @@ package com.example.Flicktionary.domain.favorite.controller;
 import com.example.Flicktionary.domain.favorite.dto.FavoriteDto;
 import com.example.Flicktionary.domain.favorite.entity.ContentType;
 import com.example.Flicktionary.domain.favorite.service.FavoriteService;
-import com.example.Flicktionary.domain.movie.controller.MovieController;
-import com.example.Flicktionary.domain.movie.service.MovieService;
 import com.example.Flicktionary.domain.user.service.UserAccountJwtAuthenticationService;
 import com.example.Flicktionary.domain.user.service.UserAccountService;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.exception.ServiceException;
 import com.example.Flicktionary.global.security.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -15,15 +14,14 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.util.List;
@@ -191,7 +189,7 @@ public class FavoriteControllerTest {
                 .formatted(userId, contentType, contentId)
                 .stripIndent();
         given(favoriteService.createFavorite(any(FavoriteDto.class)))
-                .willThrow(new IllegalArgumentException("이미 즐겨찾기에 추가된 항목입니다."));
+                .willThrow(new ServiceException(HttpStatus.CONFLICT.value(), "이미 즐겨찾기에 추가된 항목입니다."));
 
         // When & Then
 
@@ -201,9 +199,10 @@ public class FavoriteControllerTest {
                 .andDo(print());
 
         resultActions
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isConflict())
                 .andExpect(handler().handlerType(FavoriteController.class))
                 .andExpect(handler().methodName("createFavorite"))
+                .andExpect(jsonPath("$.code").value(HttpStatus.CONFLICT.value()))
                 .andExpect(jsonPath("$.message").value("이미 즐겨찾기에 추가된 항목입니다."))
                 .andExpect(jsonPath("$.data").isEmpty());
         then(favoriteService).should().createFavorite(any(FavoriteDto.class));
@@ -217,10 +216,10 @@ public class FavoriteControllerTest {
         ContentType contentType = ContentType.MOVIE;
         Long contentId = 999999999L;
         given(favoriteService.createFavorite(any(FavoriteDto.class)))
-                .willThrow(new IllegalArgumentException("%d번 ContentID를 찾을 수 없습니다.".formatted(contentId)));
+                .willThrow(new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 컨텐츠를 찾을 수 없습니다.".formatted(contentId)));
 
         // When & Then
-        // 존재하지 않는 ContentID 저장 시도 (IllegalArgumentException 발생, 400 Bad Request)
+        // 존재하지 않는 ContentID 저장 시도 (ServiceException 발생, 404 Not Found)
         ResultActions resultActions = mvc.perform(post("/api/favorites")
                         .content("""
                                 {
@@ -235,10 +234,11 @@ public class FavoriteControllerTest {
                 .andDo(print());
 
         resultActions
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(handler().handlerType(FavoriteController.class))
                 .andExpect(handler().methodName("createFavorite"))
-                .andExpect(jsonPath("$.message").value("%d번 ContentID를 찾을 수 없습니다.".formatted(contentId)));
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("%d번 컨텐츠를 찾을 수 없습니다.".formatted(contentId)));
         then(favoriteService).should().createFavorite(any(FavoriteDto.class));
     }
 
@@ -250,7 +250,7 @@ public class FavoriteControllerTest {
         ContentType contentType = ContentType.MOVIE;
         Long contentId = 1L;
         given(favoriteService.createFavorite(any(FavoriteDto.class)))
-                .willThrow(new IllegalArgumentException("User not found"));
+                .willThrow(new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 유저를 찾을 수 없습니다.".formatted(userId)));
 
         // When & Then
         ResultActions resultActions = mvc.perform(post("/api/favorites")
@@ -267,9 +267,10 @@ public class FavoriteControllerTest {
                 .andDo(print());
 
         resultActions
-                .andExpect(status().isBadRequest())
+                .andExpect(status().isNotFound())
                 .andExpect(handler().handlerType(FavoriteController.class))
                 .andExpect(handler().methodName("createFavorite"))
-                .andExpect(jsonPath("$.message").value("User not found"));
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
+                .andExpect(jsonPath("$.message").value("%d번 유저를 찾을 수 없습니다.".formatted(userId)));
     }
 }

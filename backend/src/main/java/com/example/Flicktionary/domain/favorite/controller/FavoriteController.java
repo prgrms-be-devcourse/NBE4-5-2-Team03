@@ -17,29 +17,23 @@ public class FavoriteController {
 
     // 즐겨찾기 추가
     @PostMapping
-    public ResponseEntity<ResponseDto<?>> createFavorite(@RequestBody FavoriteDto favoriteDto) {
-        try {
-            FavoriteDto createdFavorite = favoriteService.createFavorite(favoriteDto);
-            return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDto.of(HttpStatus.CREATED.value() + "", HttpStatus.CREATED.getReasonPhrase(), createdFavorite));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.of(HttpStatus.BAD_REQUEST.value() + "", e.getMessage()));
-        }
+    public ResponseEntity<ResponseDto<FavoriteDto>> createFavorite(@RequestBody FavoriteDto favoriteDto) {
+        FavoriteDto createdFavorite = favoriteService.createFavorite(favoriteDto);
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ResponseDto.of(HttpStatus.CREATED.value() + "", HttpStatus.CREATED.getReasonPhrase(), createdFavorite));
     }
 
     // 특정 사용자 ID의 즐겨찾기 목록 조회
     @GetMapping("/{userId}")
-    public ResponseEntity<ResponseDto<?>> getUserFavorites(
+    public ResponseEntity<ResponseDto<PageDto<FavoriteDto>>> getUserFavorites(
             @PathVariable Long userId,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int pageSize,
             @RequestParam(defaultValue = "id") String sortBy,
             @RequestParam(defaultValue = "desc") String direction) {
-        try {
-            PageDto<FavoriteDto> favorites = favoriteService.getUserFavorites(userId, page, pageSize, sortBy, direction);
-            return ResponseEntity.ok(ResponseDto.ok(favorites));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.of(HttpStatus.BAD_REQUEST.value() + "", e.getMessage()));
-        }
+        PageDto<FavoriteDto> favorites = favoriteService.getUserFavorites(userId, page, pageSize, sortBy, direction);
+        return ResponseEntity.ok(ResponseDto.ok(favorites));
     }
 
 //    // 즐겨찾기 수정
@@ -52,12 +46,10 @@ public class FavoriteController {
 
     // 즐겨찾기 삭제
     @DeleteMapping("/{id}")
-    public ResponseEntity<ResponseDto<?>> deleteFavorite(@PathVariable Long id) {
-        try {
-            favoriteService.deleteFavorite(id);
-            return ResponseEntity.status(HttpStatus.NO_CONTENT).body(ResponseDto.of(HttpStatus.NO_CONTENT.value() + "", HttpStatus.NO_CONTENT.getReasonPhrase(), null));
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDto.of(HttpStatus.BAD_REQUEST.value() + "", HttpStatus.BAD_REQUEST.getReasonPhrase(), null));
-        }
+    public ResponseEntity<ResponseDto<Void>> deleteFavorite(@PathVariable Long id) {
+        favoriteService.deleteFavorite(id);
+        return ResponseEntity
+                .status(HttpStatus.NO_CONTENT)
+                .body(ResponseDto.of(HttpStatus.NO_CONTENT.value() + "", HttpStatus.NO_CONTENT.getReasonPhrase(), null));
     }
 }

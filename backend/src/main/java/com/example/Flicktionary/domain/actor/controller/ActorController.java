@@ -9,12 +9,10 @@ import com.example.Flicktionary.global.dto.PageDto;
 import com.example.Flicktionary.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/actors")
@@ -23,15 +21,8 @@ public class ActorController {
     private final ActorService actorService;
 
     @GetMapping("/{actorId}")
-    public ResponseEntity<ResponseDto<?>> getActorWithMovies(@PathVariable Long actorId) {
-        Optional<Actor> actorOpt = actorService.getActorById(actorId);
-
-        if (actorOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ResponseDto.of(HttpStatus.NOT_FOUND.value() + "", "%d번 배우가 없습니다.".formatted(actorId)));
-        }
-
-        Actor actor = actorOpt.get();
+    public ResponseEntity<ResponseDto<ActorResponse>> getActorWithMovies(@PathVariable Long actorId) {
+        Actor actor = actorService.getActorById(actorId);
         List<Movie> movies = actorService.getMoviesByActorId(actorId);
         List<Series> series = actorService.getSeriesByActorId(actorId);
 

@@ -3,6 +3,7 @@ package com.example.Flicktionary.domain.series.service;
 import com.example.Flicktionary.domain.series.dto.SeriesDetailResponse;
 import com.example.Flicktionary.domain.series.entity.Series;
 import com.example.Flicktionary.domain.series.repository.SeriesRepository;
+import com.example.Flicktionary.global.exception.ServiceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -200,8 +201,8 @@ public class SeriesServiceTest {
 
         // then
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("id에 해당하는 Series가 존재하지 않습니다.");
+                .isInstanceOf(ServiceException.class)
+                .hasMessage("%d번 시리즈를 찾을 수 없습니다.".formatted(seriesId));
         then(seriesRepository).should().findById(seriesId);
     }
 }

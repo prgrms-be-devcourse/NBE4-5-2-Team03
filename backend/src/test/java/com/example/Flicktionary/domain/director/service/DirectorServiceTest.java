@@ -97,11 +97,11 @@ class DirectorServiceTest {
         given(directorRepository.findById(1L)).willReturn(Optional.of(director));
 
         // When
-        Optional<Director> result = directorService.getDirector(1L);
+        Director result = directorService.getDirector(1L);
 
         // Then
-        assertThat(result).isPresent();
-        assertEquals(director, result.get());
+        assertThat(result).isNotNull();
+        assertEquals(director, result);
 
         then(directorRepository).should().findById(1L);
     }

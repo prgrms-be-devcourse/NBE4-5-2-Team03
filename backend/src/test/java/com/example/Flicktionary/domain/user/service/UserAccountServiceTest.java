@@ -1,8 +1,10 @@
 package com.example.Flicktionary.domain.user.service;
 
+import com.example.Flicktionary.domain.review.service.ReviewService;
 import com.example.Flicktionary.domain.user.dto.UserAccountDto;
 import com.example.Flicktionary.domain.user.entity.UserAccount;
 import com.example.Flicktionary.domain.user.repository.UserAccountRepository;
+import com.example.Flicktionary.global.exception.ServiceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -41,6 +43,9 @@ class UserAccountServiceTest {
     @Mock
     private PasswordEncoder passwordEncoder;
 
+    @Mock
+    private ReviewService reviewService;
+
     @InjectMocks
     private UserAccountService userAccountService;
 
@@ -72,8 +77,8 @@ class UserAccountServiceTest {
                 userAccountService.modifyUser(0L, userAccountDto));
 
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
-                .hasMessageContaining("유저를 찾을 수 없습니다.");
+                .isInstanceOf(ServiceException.class)
+                .hasMessageContaining("0번 유저를 찾을 수 없습니다.");
     }
 
     @DisplayName("회원의 정보를 수정한다.")
@@ -133,8 +138,8 @@ class UserAccountServiceTest {
         Throwable thrown = catchThrowable(() -> userAccountService.getUserById(999L));
 
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("유저를 찾을 수 없습니다.");
+                .isInstanceOf(ServiceException.class)
+                .hasMessage("999번 유저를 찾을 수 없습니다.");
     }
 
     @DisplayName("유저 ID로 회원을 조회한다.")
@@ -164,7 +169,7 @@ class UserAccountServiceTest {
                 userAccountService.getUserByUsername("nonexistentuser"));
 
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("유저를 찾을 수 없습니다.");
     }
 
@@ -190,7 +195,7 @@ class UserAccountServiceTest {
                 userAccountService.deleteUserById(999L));
 
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
-                .hasMessage("유저를 찾을 수 없습니다.");
+                .isInstanceOf(ServiceException.class)
+                .hasMessage("999번 유저를 찾을 수 없습니다.");
     }
 }

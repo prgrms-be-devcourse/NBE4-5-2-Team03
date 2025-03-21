@@ -3,6 +3,7 @@ package com.example.Flicktionary.domain.user.service;
 import com.example.Flicktionary.domain.user.entity.UserAccount;
 import com.example.Flicktionary.domain.user.entity.UserAccountType;
 import com.example.Flicktionary.domain.user.repository.UserAccountRepository;
+import com.example.Flicktionary.global.exception.ServiceException;
 import com.example.Flicktionary.global.utils.JwtUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -97,7 +98,7 @@ class UserAccountJwtAuthenticationServiceTest {
                 "wrongPassword"));
 
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("비밀번호가 틀립니다.");
     }
 
@@ -136,7 +137,7 @@ class UserAccountJwtAuthenticationServiceTest {
                 .createNewAccessTokenWithRefreshToken(wrongRefreshToken));
 
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("리프레시 토큰이 유효하지 않습니다.");
         then(userAccountRepository).should().findByRefreshToken(wrongRefreshToken);
     }

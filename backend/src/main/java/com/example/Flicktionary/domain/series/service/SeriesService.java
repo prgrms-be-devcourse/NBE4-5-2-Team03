@@ -13,6 +13,7 @@ import com.example.Flicktionary.domain.series.repository.SeriesRepository;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbPopularSeriesResponse;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbSeriesDetailResponse;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbSeriesPopularIdResponse;
+import com.example.Flicktionary.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -21,10 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.http.HttpEntity;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpMethod;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -214,11 +212,11 @@ public class SeriesService {
         } else if (sortBy.equalsIgnoreCase("ratingCount")) { //리뷰 개수 내림차순
             sort = Sort.by("ratingCount").descending();
         } else {
-            throw new RuntimeException("잘못된 정렬 방식입니다.");
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), "잘못된 정렬 방식입니다.");
         }
 
         if (page < 1) {
-            throw new RuntimeException("페이지는 1부터 요청 가능합니다.");
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), "페이지는 1부터 요청 가능합니다.");
         }
 
         Pageable pageable = PageRequest.of(page - 1, pageSize, sort);
@@ -228,7 +226,7 @@ public class SeriesService {
     //Series 상세 조회
     public SeriesDetailResponse getSeriesDetail(Long id) throws InterruptedException {
         Series series = seriesRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("id에 해당하는 Series가 존재하지 않습니다."));
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 시리즈를 찾을 수 없습니다.".formatted(id)));
 
         //등록 or 수정된지 7일이 지났다면 업데이트
         if (ChronoUnit.DAYS.between(series.getFetchDate(), LocalDate.now()) >= 7) {

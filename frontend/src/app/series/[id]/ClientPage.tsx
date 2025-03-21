@@ -71,7 +71,7 @@ export default function ClientPage({
 
           {/* 즐겨찾기 추가 버튼 */}
           <div className="mt-6">
-            <FavoriteButton contentId={data.id} contentType="SERIES" />
+            <FavoriteButton contentId={data.id!!} contentType="SERIES" />
           </div>
         </div>
       </div>

@@ -7,6 +7,7 @@ import com.example.Flicktionary.domain.movie.service.MovieService;
 import com.example.Flicktionary.domain.user.service.UserAccountJwtAuthenticationService;
 import com.example.Flicktionary.domain.user.service.UserAccountService;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.exception.ServiceException;
 import com.example.Flicktionary.global.security.CustomUserDetailsService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -14,22 +15,18 @@ import org.mockito.ArgumentCaptor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
-import java.util.NoSuchElementException;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
@@ -123,7 +120,7 @@ class MovieControllerTest {
     @DisplayName("영화 목록 조회 - 실패 - 잘못된 정렬 기준")
     void getMovies2() throws Exception {
         given(movieService.getMovies(any(String.class), any(Integer.class), any(Integer.class), any(String.class)))
-                .willThrow(new RuntimeException("잘못된 정렬기준입니다."));
+                .willThrow(new ServiceException(HttpStatus.BAD_REQUEST.value(), "잘못된 정렬기준입니다."));
 
         ResultActions resultActions = mvc.perform(get("/api/movies")
                         .contentType(MediaType.APPLICATION_JSON))
@@ -133,6 +130,7 @@ class MovieControllerTest {
                 .andExpect(status().isBadRequest())
                 .andExpect(handler().handlerType(MovieController.class))
                 .andExpect(handler().methodName("getMovies"))
+                .andExpect(jsonPath("$.code").value(HttpStatus.BAD_REQUEST.value()))
                 .andExpect(jsonPath("$.message").value("잘못된 정렬기준입니다."))
                 .andExpect(jsonPath("$.data").isEmpty());
     }
@@ -165,7 +163,7 @@ class MovieControllerTest {
     void getMovie2() throws Exception {
         long id = 1000000000000000000L;
         given(movieService.getMovie(id)).willThrow(
-                new NoSuchElementException("%d번 영화를 찾을 수 없습니다.".formatted(id))
+                new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 영화를 찾을 수 없습니다.".formatted(id))
         );
 
         ResultActions resultActions = mvc.perform(get("/api/movies/%d".formatted(id))
@@ -176,6 +174,7 @@ class MovieControllerTest {
                 .andExpect(status().isNotFound())
                 .andExpect(handler().handlerType(MovieController.class))
                 .andExpect(handler().methodName("getMovie"))
+                .andExpect(jsonPath("$.code").value(HttpStatus.NOT_FOUND.value()))
                 .andExpect(jsonPath("$.message").value("%d번 영화를 찾을 수 없습니다.".formatted(id)))
                 .andExpect(jsonPath("$.data").isEmpty());
     }

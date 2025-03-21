@@ -7,12 +7,11 @@ import com.example.Flicktionary.domain.favorite.repository.FavoriteRepository;
 import com.example.Flicktionary.domain.movie.entity.Movie;
 import com.example.Flicktionary.domain.movie.repository.MovieRepository;
 import com.example.Flicktionary.domain.series.entity.Series;
-import com.example.Flicktionary.domain.series.repository.SeriesRepository;
 import com.example.Flicktionary.domain.user.entity.UserAccount;
 import com.example.Flicktionary.domain.user.entity.UserAccountType;
 import com.example.Flicktionary.domain.user.repository.UserAccountRepository;
 import com.example.Flicktionary.global.dto.PageDto;
-import org.junit.jupiter.api.BeforeEach;
+import com.example.Flicktionary.global.exception.ServiceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -20,15 +19,10 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -37,7 +31,6 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
@@ -173,7 +166,7 @@ public class FavoriteServiceTest {
         Throwable thrown = catchThrowable(() -> favoriteService.createFavorite(favorite1));
 
         assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("이미 즐겨찾기에 추가된 항목입니다.");
         then(userAccountRepository).should().findById(testUser.getId());
         then(favoriteRepository).should().existsByUserAccountIdAndContentTypeAndContentId(
@@ -195,8 +188,8 @@ public class FavoriteServiceTest {
         Throwable thrown = catchThrowable(() -> favoriteService.createFavorite(favoriteDto));
 
         assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("User not found");
+                .isInstanceOf(ServiceException.class)
+                .hasMessage("9999번 유저를 찾을 수 없습니다.");
         then(userAccountRepository).should().findById(favoriteDto.getUserId());
     }
 
@@ -218,8 +211,8 @@ public class FavoriteServiceTest {
         Throwable thrown = catchThrowable(() -> favoriteService.createFavorite(favoriteDto));
 
         assertThat(thrown)
-                .isInstanceOf(IllegalArgumentException.class)
-                .hasMessage("%d번 ContentID를 찾을 수 없습니다.".formatted(favoriteDto.getContentId()));
+                .isInstanceOf(ServiceException.class)
+                .hasMessage("%d번 컨텐츠를 찾을 수 없습니다.".formatted(favoriteDto.getContentId()));
         then(userAccountRepository).should().findById(any(Long.class));
         then(favoriteRepository).should().existsByUserAccountIdAndContentTypeAndContentId(
                 any(Long.class),
@@ -243,7 +236,7 @@ public class FavoriteServiceTest {
                                 page - 1,
                                 pageSize,
                                 Sort.by(Sort.Direction.fromString(direction),
-                                "id")),
+                                        "id")),
                         10));
 
         // When
@@ -317,7 +310,7 @@ public class FavoriteServiceTest {
         Pageable captured = captor.getValue();
 
         // Then
-         assertEquals(Sort.by(Sort.Direction.fromString(direction), "movie.ratingCount",
+        assertEquals(Sort.by(Sort.Direction.fromString(direction), "movie.ratingCount",
                 "series.ratingCount"), captured.getSort());
         then(userAccountRepository).should().existsById(favorite1.getUserId());
         then(favoriteRepository).should().findAllByUserAccountIdWithContent(any(Long.class), any(Pageable.class));

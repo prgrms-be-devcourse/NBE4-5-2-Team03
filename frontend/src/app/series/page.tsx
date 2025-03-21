@@ -29,11 +29,11 @@ export default async function Page({
     },
   });
 
-  if (response.data?.data == null) {
-    return <div>{response.data?.message}</div>;
+  if (response.error) {
+    return <div>{response.error.message}</div>;
   }
 
-  const data = response.data.data;
+  const data = response.data.data!!;
 
   return (
     <ClientPage

@@ -78,7 +78,7 @@ export default function ClientPage({
         <div className="flex">
           <Card
             className="w-40 flex flex-col items-center p-4 shadow-md cursor-pointer hover:bg-gray-100 transition"
-            onClick={() => router.push(`/directors/${data.director.id}`)}
+            onClick={() => router.push(`/directors/${data.director?.id}`)}
           >
             <img
               src={data.director?.profilePath || "/no-image.png"}

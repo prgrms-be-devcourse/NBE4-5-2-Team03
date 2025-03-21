@@ -1,8 +1,5 @@
 package com.example.Flicktionary.domain.movie.service;
 
-import com.example.Flicktionary.domain.actor.repository.ActorRepository;
-import com.example.Flicktionary.domain.director.repository.DirectorRepository;
-import com.example.Flicktionary.domain.genre.repository.GenreRepository;
 import com.example.Flicktionary.domain.movie.dto.MovieResponse;
 import com.example.Flicktionary.domain.movie.dto.MovieResponseWithDetail;
 import com.example.Flicktionary.domain.movie.entity.Movie;
@@ -10,33 +7,29 @@ import com.example.Flicktionary.domain.movie.repository.MovieRepository;
 import com.example.Flicktionary.domain.tmdb.dto.TmdbMovieResponseWithDetail;
 import com.example.Flicktionary.domain.tmdb.service.TmdbService;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.exception.ServiceException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.*;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.NoSuchElementException;
 import java.util.Optional;
 
 import static org.assertj.core.api.AssertionsForClassTypes.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.catchThrowable;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.then;
-import static org.mockito.Mockito.*;
 
 @DisplayName("영화 서비스 테스트")
 @ExtendWith(MockitoExtension.class)
@@ -191,7 +184,7 @@ class MovieServiceTest {
         Throwable thrown = catchThrowable(() -> movieService.getMovies(keyword, page, pageSize, sortBy));
 
         assertThat(thrown)
-                .isInstanceOf(RuntimeException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("잘못된 정렬 기준입니다.");
     }
 
@@ -271,7 +264,7 @@ class MovieServiceTest {
         Throwable thrown = catchThrowable(() -> movieService.getMovie(id));
 
         assertThat(thrown)
-                .isInstanceOf(NoSuchElementException.class)
+                .isInstanceOf(ServiceException.class)
                 .hasMessage("%d번 영화를 찾을 수 없습니다.".formatted(id));
     }
 }

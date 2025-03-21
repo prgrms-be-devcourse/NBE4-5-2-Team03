@@ -10,12 +10,10 @@ import com.example.Flicktionary.global.dto.PageDto;
 import com.example.Flicktionary.global.dto.ResponseDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/directors")
@@ -34,19 +32,12 @@ public class DirectorController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> getDirector(@PathVariable Long id) {
-        Optional<Director> directorOpt = directorService.getDirector(id);
-
-        if (directorOpt.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND)
-                    .body(ResponseDto.of(HttpStatus.NOT_FOUND.value() + "", "%d번 감독을 찾을 수 없습니다.".formatted(id)));
-        }
-
-        Director director = directorOpt.get();
+    public ResponseEntity<ResponseDto<DirectorResponse>> getDirector(@PathVariable Long id) {
+        Director director = directorService.getDirector(id);
         List<Movie> movies = directorService.getMoviesByDirectorId(id);
         List<Series> series = directorService.getSeriesByDirectorId(id);
 
-        return ResponseEntity.ok(ResponseDto.ok(new DirectorController.DirectorResponse(director, movies, series)));
+        return ResponseEntity.ok(ResponseDto.ok(new DirectorResponse(director, movies, series)));
     }
 
     private record DirectorResponse(Long id, String name, String profilePath, List<ActorController.MovieDTO> movies,

@@ -10,11 +10,13 @@ import com.example.Flicktionary.domain.series.repository.SeriesRepository;
 import com.example.Flicktionary.domain.user.entity.UserAccount;
 import com.example.Flicktionary.domain.user.repository.UserAccountRepository;
 import com.example.Flicktionary.global.dto.PageDto;
+import com.example.Flicktionary.global.exception.ServiceException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,26 +42,26 @@ public class ReviewService {
 
         // 유저 id를 찾음
         UserAccount userAccount = userAccountRepository.findById(reviewDto.getUserAccountId())
-                .orElseThrow(() -> new IllegalArgumentException("찾으시려는 유저 id가 없습니다."));
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 유저를 찾을 수 없습니다.".formatted(userAccountId)));
 
         // 특정 영화에 이미 리뷰를 작성했는지 확인
         if (movieId != null && reviewRepository.existsByUserAccount_IdAndMovie_Id(userAccountId, movieId)) {
-            throw new IllegalStateException("이미 해당 영화에 대한 리뷰를 작성하셨습니다.");
+            throw new ServiceException(HttpStatus.CONFLICT.value(), "이미 해당 영화에 대한 리뷰를 작성하셨습니다.");
         }
 
         // 특정 드라마에 이미 리뷰를 작성했는지 확인
         if (seriesId != null && reviewRepository.existsByUserAccount_IdAndSeries_Id(userAccountId, seriesId)) {
-            throw new IllegalStateException("이미 해당 드라마에 대한 리뷰를 작성하셨습니다.");
+            throw new ServiceException(HttpStatus.CONFLICT.value(), "이미 해당 드라마에 대한 리뷰를 작성하셨습니다.");
         }
 
         // 리뷰 내용이 null이거나 비어있을 경우
         if (reviewDto.getContent() == null || reviewDto.getContent().isBlank()) {
-            throw new IllegalArgumentException("리뷰 내용을 입력해주세요.");
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), "리뷰 내용을 입력해주세요.");
         }
 
         // 평점이 매겨지지 않을 경우
         if (reviewDto.getRating() == 0) {
-            throw new IllegalArgumentException("평점을 매겨주세요.");
+            throw new ServiceException(HttpStatus.BAD_REQUEST.value(), "평점을 매겨주세요.");
         }
 
         // 영화를 찾아 저장. 없을 경우 null
@@ -112,7 +114,7 @@ public class ReviewService {
 
         // id로 리뷰를 찾을 수 없을 경우
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("해당 리뷰를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 리뷰를 찾을 수 없습니다.".formatted(id)));
 
         // 평점을 수정한다면 영화와 시리즈 정보 업데이트
         if (reviewDto.getRating() != 0 && reviewDto.getRating() != review.getRating()) {
@@ -137,7 +139,7 @@ public class ReviewService {
     public void deleteReview(Long id) {
         // id로 리뷰를 찾을 수 없을 경우
         Review review = reviewRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("해당 리뷰를 찾을 수 없습니다."));
+                .orElseThrow(() -> new ServiceException(HttpStatus.NOT_FOUND.value(), "%d번 리뷰를 찾을 수 없습니다.".formatted(id)));
 
         // 영화, 시리즈 정보 업데이트
         updateRatingAndCount(review.getMovie(), review.getSeries(), -review.getRating(), true);
