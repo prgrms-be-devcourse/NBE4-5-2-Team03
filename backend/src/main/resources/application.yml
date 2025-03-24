@@ -17,12 +17,23 @@ spring:
     database-platform: org.hibernate.dialect.MySQLDialect
     open-in-view: false
     show-sql: false
-    properties:
-      hibernate:
+    properties.hibernate:
         format_sql: true
         highlight_sql: true
         use_sql_comments: true
         default_batch_fetch_size: 10
+
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    protocol: smtp
+    properties.mail.smtp:
+          auth: true
+          timeout: 5000
+          starttls.enable: true
+
 
 tmdb:
   access-token: ${TMDB_ACCESS_TOKEN}
@@ -34,3 +45,5 @@ custom:
     access-expire-seconds: "#{300}"
     # 리프레시 토큰 유효기간(일)
     refresh-expire-days: "#{7}"
+  mail:
+    sender: ${EMAIL_SENDER_ADDRESS}
