@@ -14,6 +14,9 @@ DB_URL=jdbc:mysql://mysql:3306/flicktionary
 JWT_SECRET_KEY={JWT 토큰을 서명할 128비트 비밀키}
 TMDB_ACCESS_TOKEN={TMDB API 인증 토큰}
 TMDB_BASE_IMAGE_URL=localhost
+EMAIL_USERNAME={지메일 SMTP서버 인증에 사용할 유저네임}
+EMAIL_PASSWORD={지메일 SMTP서버 인증에 사용할 비밀번호}
+EMAIL_SENDER_ADDRESS={메일 발송시 보낸이로 지정할 이메일 주소}
 ```
 
 백엔드 서비스를 컴파일 한 뒤,
