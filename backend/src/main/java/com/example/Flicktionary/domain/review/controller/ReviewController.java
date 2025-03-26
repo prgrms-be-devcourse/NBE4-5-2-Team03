@@ -29,10 +29,10 @@ public class ReviewController {
     @GetMapping
     public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> getAllReviews(
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "10") int size
+            @RequestParam(defaultValue = "10") int pageSize
     ) {
 
-        PageDto<ReviewDto> reviews = reviewService.findAllReviews(page, size);
+        PageDto<ReviewDto> reviews = reviewService.findAllReviews(page, pageSize);
         return ResponseEntity.ok(ResponseDto.ok(reviews));
     }
 
@@ -41,9 +41,9 @@ public class ReviewController {
     public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> searchReviews(
             @RequestParam String keyword,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "5") int pageSize) {
 
-        return ResponseEntity.ok(ResponseDto.ok(reviewService.searchReviews(keyword, page, size)));
+        return ResponseEntity.ok(ResponseDto.ok(reviewService.searchReviews(keyword, page, pageSize)));
     }
 
     // 리뷰 수정
@@ -72,10 +72,10 @@ public class ReviewController {
     public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> reviewMovieDtoPage(
             @PathVariable Long movie_id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "5") int pageSize) {
 
         // 특정 영화 리뷰 페이지를 조회해 변수에 담아 클라이언트에 반환
-        PageDto<ReviewDto> reviews = reviewService.reviewMovieDtoPage(movie_id, page, size);
+        PageDto<ReviewDto> reviews = reviewService.reviewMovieDtoPage(movie_id, page, pageSize);
         return ResponseEntity.ok(ResponseDto.ok(reviews));
     }
 
@@ -84,10 +84,10 @@ public class ReviewController {
     public ResponseEntity<ResponseDto<PageDto<ReviewDto>>> reviewSeriesDtoPage(
             @PathVariable Long series_id,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "5") int size) {
+            @RequestParam(defaultValue = "5") int pageSize) {
 
         // 특정 드라마 리뷰 페이지를 조회해 변수에 담아 클라이언트에 반환
-        PageDto<ReviewDto> reviews = reviewService.reviewSeriesDtoPage(series_id, page, size);
+        PageDto<ReviewDto> reviews = reviewService.reviewSeriesDtoPage(series_id, page, pageSize);
         return ResponseEntity.ok(ResponseDto.ok(reviews));
     }
 }
